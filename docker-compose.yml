@@ -21,6 +21,8 @@ services:
       - "5000:5000"
     volumes: 
       - ./backend:/app
+    environment:
+      FLASK_DEBUG: 1
     depends_on: 
       - db
   db: 
