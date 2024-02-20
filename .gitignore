@@ -15,9 +15,6 @@ yarn-error.log
 *.pyd
 *.pyc
 
-# MySQL
-*.sql.gz
-
 # General
 .vscode/
 .env
