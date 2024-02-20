@@ -16,8 +16,6 @@ yarn-error.log
 *.pyc
 
 # MySQL
-/db_data/
-*.sql
 *.sql.gz
 
 # General
