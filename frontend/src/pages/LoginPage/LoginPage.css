@@ -1,0 +1,7 @@
+* { 
+    font-family: 'Google Sans','Noto Sans Myanmar UI',arial,sans-serif;
+    display:  flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
