@@ -160,3 +160,16 @@ INSERT INTO interests (interest, description, category) VALUES
 ('Discussion', 'Engage in conversations and debates on various topics and issues.', 'Socializing'),
 ('Commitment', 'Participate in activities or organizations with a dedicated and loyal mindset.', 'Socializing'),
 ('Relaxing', 'Engage in activities aimed at reducing stress and promoting relaxation.', 'Socializing'); 
+
+INSERT INTO users (username, password, name, picture) VALUES 
+('am4103', 'password', 'afonso mendes', NULL),
+('ab1234', 'password1', 'test user 1', NULL),
+('ye1235', 'password2', 'test user 2', NULL);
+
+INSERT INTO userInterests (user_id, interest, scale)
+SELECT
+    users.user_id,
+    interests.interest,
+    0 AS scale
+FROM
+    users, interests;
