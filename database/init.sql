@@ -179,7 +179,7 @@ INSERT INTO userSocieties (society_id, user_id, join_date, role) VALUES
 ('1', '1', CURRENT_DATE, 'member'),
 ('1', '2', CURRENT_DATE, 'commitee');
 
-/*     api for selecting all users in a society
+/*     api for selecting all users in a society, or every society a user is in
 SELECT users.name, societies.name AS society, userSocieties.role 
 FROM userSocieties 
 INNER JOIN users ON users.user_id = userSocieties.user_id 
