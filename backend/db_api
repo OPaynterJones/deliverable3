@@ -1,0 +1,74 @@
+from flask import Flask, jsonify, request
+from flask_mysqldb import MySQL
+
+app = Flask(__name__)
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'password'
+app.config['MYSQL_DB'] = 'example' # database_name
+mysql = MySQL(app)
+
+@app.route('/')
+def hello():
+    return "API Running! Hello World"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+"""
+GET all_data FROM users
+"""
+@app.route('/user/', methods=['GET'])
+def get_user_data():
+    cursor = mysql.connection.cursor()
+    cursor.execute('''SELECT * FROM users''')
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
+
+"""
+cursor.execute(f" SELECT * USERID = {id}")
+
+"""
+
+"""
+GET all_data FROM users WITH user_id
+"""
+@app.route('/data/<int:id>', methods=['GET'])
+def get_user_data_with_id(id):
+    cursor = mysql.connection.cursor()
+    #cursor.execute('''SELECT * FROM users WHERE user_id = %s''', (id,))
+    cursor.execute(f"SELECT * FROM users WHERE user_id = {id}")
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
+
+@app.route('/data/', methods=['POST'])
+def add_user_data():
+    cursor = mysql.connection.cursor()
+    username = request.json['username']
+    password = request.json['password']
+    name     = request.json['name']
+    cursor.execute('''INSERT INTO users (username, password, name) VALUES (%s, %s)''', (username, password, name))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': "User added successfully"})
+
+@app.route('/data/<int:id>', methods=['PUT'])
+def update_user_data_with_id(id):
+    cursor = mysql.connection.cursor()
+    name     = request.json['name']
+    password = request.json['password']
+    cursor.execute('''UPDATE users SET name = %s, password = %s WHERE user_id = %s''', (name, password, id))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': "User data updated successfully"})
+
+@app.route('/data/<int:id>', methods=['DELETE'])
+def delete_user_with_id(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute('''DELETE FROM users WHERE user_id = %s''', (id,))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': "User deleted successfully"})
