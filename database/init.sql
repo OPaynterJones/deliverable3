@@ -173,3 +173,16 @@ SELECT
     0 AS scale
 FROM
     users, interests;
+
+--just for tesing purposes
+INSERT INTO userSocieties (society_id, user_id, join_date, role) VALUES
+('1', '1', CURRENT_DATE, 'member'),
+('1', '2', CURRENT_DATE, 'commitee');
+
+/*     api for selecting all users in a society
+SELECT users.name, societies.name AS society, userSocieties.role 
+FROM userSocieties 
+INNER JOIN users ON users.user_id = userSocieties.user_id 
+INNER JOIN societies ON userSocieties.society_id = societies.society_id 
+WHERE userSocieties.society_id = 1;
+*/
