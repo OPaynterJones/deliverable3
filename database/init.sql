@@ -166,11 +166,12 @@ INSERT INTO users (username, password, name, picture) VALUES
 ('ab1234', 'password1', 'test user 1', NULL),
 ('ye1235', 'password2', 'test user 2', NULL);
 
+--FLOOR(RAND() * 128) for random values for scale
 INSERT INTO userInterests (user_id, interest, scale)
 SELECT
     users.user_id,
     interests.interest,
-    0 AS scale
+    0 AS scale             
 FROM
     users, interests;
 
@@ -179,10 +180,18 @@ INSERT INTO userSocieties (society_id, user_id, join_date, role) VALUES
 ('1', '1', CURRENT_DATE, 'member'),
 ('1', '2', CURRENT_DATE, 'commitee');
 
-/*     api for selecting all users in a society, or every society a user is in
+/*             select all users in a society, or every society a user is in
 SELECT users.name, societies.name AS society, userSocieties.role 
 FROM userSocieties 
 INNER JOIN users ON users.user_id = userSocieties.user_id 
 INNER JOIN societies ON userSocieties.society_id = societies.society_id 
 WHERE userSocieties.society_id = 1;
+*/
+
+/*               select 10 highest interests for a given user 
+SELECT *
+FROM userInterests
+WHERE user_id = 1
+ORDER BY scale DESC
+LIMIT 10;
 */
