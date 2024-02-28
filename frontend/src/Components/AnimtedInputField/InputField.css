@@ -9,18 +9,18 @@
 .inputFieldContainer input {
   height: 100%;
   width: 100%;
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
   padding: 0 30px;
   border-radius: 10px;
-  border: 1px solid #094467;
+  border: 1px solid var(--primary-color);
   background: transparent;
   transition: 0.1s ease;
 }
 
 .inputFieldContainer input:not(:placeholder-shown),
 .inputFieldContainer input:focus {
-  color: #367da6;
-  border: 3px solid #367da6;
+  border: 3px solid var(--secondary-color);
 }
 
 .inputFieldLabel {
@@ -29,7 +29,7 @@
   top: 0; 
   left: 0;
   font-size: 1rem;
-  color: #1a638d;
+  color: var(--text-primary);
   padding: 0 10px;
   margin: 7px 4px;
   background-color: transparent;
@@ -39,8 +39,8 @@
 
 .inputFieldContainer input:not(:placeholder-shown) + .inputFieldLabel,
 .inputFieldContainer input:focus + .inputFieldLabel {
-  color: #367da6;
-  background-color: white;
+  color: var(--text-secondary);
+  background-color: var(--accent-color);
   border-radius: 30px;
   height: 30px;
   line-height: 30px;
