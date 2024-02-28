@@ -21,10 +21,10 @@ def say_hello():
 @app.route('/test')
 def test():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM societies')
+    cur.execute('SELECT * FROM userSocieties')
     data = cur.fetchall()
     cur.close()
-    return str(data)
+    return jsonify(data)
 
 @app.route('/uinterests')                       #its /uinterests?user_id=...  
 def return_userinterests():
@@ -36,7 +36,7 @@ def return_userinterests():
     cur.execute('SELECT * FROM userInterests WHERE user_id = %s', (user_id,))
     data = cur.fetchall()
     cur.close()
-    return str(data)
+    return jsonify(data)
 
 @app.route('/set_uinterest', methods=['GET', 'POST'])     #its /set_uinterest?user_id=...&interest=....&scale=...
 def set_userinterest():
