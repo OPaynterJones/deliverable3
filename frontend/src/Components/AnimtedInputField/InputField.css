@@ -1,25 +1,20 @@
 .inputFieldContainer {
   position: relative;
-  height: 80px;
+  height: 50px;
   width: 100%;
   line-height: 35px;
-  margin: 13px 0px 0px 0px;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 0.8rem 0;
 }
 
 .inputFieldContainer input {
-  position: absolute;
-  height: 50px;
+  height: 100%;
   width: 100%;
-  font-size: 2.1em;
+  font-size: 1rem;
   padding: 0 30px;
   border-radius: 10px;
-  border: 2px solid #094467;
+  border: 1px solid #094467;
   background: transparent;
   transition: 0.1s ease;
-  margin: 0;
-  box-sizing: border-box;
 }
 
 .inputFieldContainer input:not(:placeholder-shown),
@@ -30,20 +25,24 @@
 
 .inputFieldLabel {
   position: absolute;
-  font-size: 1.5em;
-  color: #094467;
-  padding: 0 18px;
+  transform-origin: top left;
+  top: 0; 
+  left: 0;
+  font-size: 1rem;
+  color: #1a638d;
+  padding: 0 10px;
   margin: 7px 4px;
-  background-color: white;
+  background-color: transparent;
   transition: 0.1s ease;
   pointer-events: none;
-  box-sizing: border-box;
 }
 
 .inputFieldContainer input:not(:placeholder-shown) + .inputFieldLabel,
 .inputFieldContainer input:focus + .inputFieldLabel {
   color: #367da6;
+  background-color: white;
+  border-radius: 30px;
   height: 30px;
   line-height: 30px;
-  transform: translate(0px, -22px) scale(0.65);
+  transform: translate(10px, -17px) scale(0.65);
 }

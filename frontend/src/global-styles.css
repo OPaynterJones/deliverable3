@@ -1,6 +1,14 @@
+* {
+    margin: 0; 
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 24px;
+    font-weight: 400;
+    font-family: 'Google Sans', 'Noto Sans Myanmar UI', Arial, sans-serif;
+}
+
 .login-page-body {
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 100vh;
   }
