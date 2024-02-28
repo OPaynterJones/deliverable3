@@ -166,7 +166,6 @@ INSERT INTO users (username, password, name, picture) VALUES
 ('ab1234', 'password1', 'test user 1', NULL),
 ('ye1235', 'password2', 'test user 2', NULL);
 
---FLOOR(RAND() * 128) for random values for scale
 INSERT INTO userInterests (user_id, interest, scale)
 SELECT
     users.user_id,
@@ -175,7 +174,6 @@ SELECT
 FROM
     users, interests;
 
---just for tesing purposes
 INSERT INTO userSocieties (society_id, user_id, join_date, role) VALUES
 ('1', '1', CURRENT_DATE, 'member'),
 ('1', '2', CURRENT_DATE, 'commitee');
