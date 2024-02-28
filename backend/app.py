@@ -21,7 +21,7 @@ def say_hello():
 @app.route('/test')
 def test():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM societies')
+    cur.execute('SELECT * FROM userSocieties')
     data = cur.fetchall()
     cur.close()
     return str(data)
