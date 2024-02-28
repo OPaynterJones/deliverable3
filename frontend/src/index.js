@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
+import ChoseYourInterests from "./pages/ChoseYourInterests/ChoseYourInterestspage"
 import "./global-styles.css";
 
 function BodyStyleManager() {
@@ -21,7 +22,8 @@ const App = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/foryou/" element={<ForYouPage />} />
+      <Route path="/chose-your-interests" element={<ChoseYourInterests />} />
+      <Route path="/for-you/" element={<ForYouPage />} />
     </Routes>
     <BodyStyleManager />
   </BrowserRouter>
