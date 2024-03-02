@@ -13,6 +13,67 @@ app.config["MYSQL_DB"] = "deliverable3_testing_db"
 
 mysql = MySQL(app)
 
+# get all data from table users by user_id
+@app.route("/user_data")
+def get_user_data():
+    user_id = request.args.get("id", default=-1, type=int)
+    
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT * FROM users WHERE user_id = {user_id}")
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
+
+# get name from table users by user_id
+@app.route("/get_user_name")
+def get_user_name():
+    user_id = request.args.get("id", default=-1, type=int)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT name FROM users WHERE user_id = {user_id}")
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
+
+# create new user set username, password, name to table users
+@app.route("/create_user")
+def set_user_data():
+    username = request.args.get("username", type=str)
+    password = request.args.get("password", type=str)
+    name     = request.args.get("name", type=str)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"INSERT INTO users (username, password, name) VALUES ({username}, {password}, {name})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': "User added successfully"})
+
+# set updated password from table users by user_id
+@app.route("/update_user_password")
+def set_user_password():
+    user_id  = request.args.get("id", default=-1, type=int)
+    password = request.args.get("password", type=str)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"UPDATE users SET password = {password} WHERE user_id = {user_id})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': "Password updated successfully"})
+
+# set updated name from table users by user_id
+@app.route("/update_name")
+def set_user_name():
+    user_id  = request.args.get("id", default=-1, type=int)
+    name = request.args.get("name", type=str)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"UPDATE users SET password = {name} WHERE user_id = {user_id})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': "Name updated successfully"})
+
+
+
 
 
 
@@ -45,14 +106,8 @@ def return_userinterests():
     return jsonify(data)
 
 
-@app.route(
-    "/set_uinterest", methods=["GET", "POST"]
-)  # its /set_uinterest?user_id=...&interest=....&scale=...
+@app.route("/set_uinterest", methods=["GET", "POST"])  # its /set_uinterest?user_id=...&interest=....&scale=...
 def set_userinterest():
-    user_id = request.args.get("user_id")  # need to change to form
-    interest = request.args.get("interest")
-    scale = request.args.get("scale")
-
     user_id = request.args.get("user_id")  # need to change to form
     interest = request.args.get("interest")
     scale = request.args.get("scale")
