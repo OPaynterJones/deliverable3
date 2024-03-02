@@ -18,11 +18,9 @@ CREATE TABLE `societies` (
 
 CREATE TABLE `users` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `username` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `name` TINYTEXT NOT NULL,
-    `picture` TEXT NULL,
-    UNIQUE (`username`)
+    UNIQUE (`email`)
 );
 
 CREATE TABLE `interests` (
@@ -167,10 +165,10 @@ INSERT INTO interests (interest, description, category) VALUES
 ('Commitment', 'Participate in activities or organizations with a dedicated and loyal mindset.', 'Socializing'),
 ('Relaxing', 'Engage in activities aimed at reducing stress and promoting relaxation.', 'Socializing'); 
 
-INSERT INTO users (username, password, name, picture) VALUES 
-('am4103', 'password', 'afonso mendes', NULL),
-('ab1234', 'password1', 'test user 1', NULL),
-('ye1235', 'password2', 'test user 2', NULL);
+INSERT INTO users (email, password) VALUES 
+('am4103@bath.ac.uk', 'password', NULL),
+('ab1234@test.com', 'password1', NULL),
+('ye1235@test.com', 'password2', NULL);
 
 INSERT INTO userInterests (user_id, interest, scale)
 SELECT
