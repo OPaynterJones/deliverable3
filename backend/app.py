@@ -1,23 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_mysqldb import MySQL
 from flask_cors import CORS
-from flask_cors import CORS
 
 app = Flask(__name__)
 
-
 CORS(app, origins=["http://localhost:3000"])
-
-
-app.config["MYSQL_HOST"] = "db"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = ""
-app.config["MYSQL_DB"] = "deliverable3_testing_db"
-
-
-
-CORS(app, origins=["http://localhost:3000"])
-
 
 app.config["MYSQL_HOST"] = "db"
 app.config["MYSQL_USER"] = "root"
@@ -27,24 +14,19 @@ app.config["MYSQL_DB"] = "deliverable3_testing_db"
 mysql = MySQL(app)
 
 
-@app.route("/")
+
 
 @app.route("/")
 def index():
     return "Server Works!"
 
-    return "Server Works!"
-
-
 @app.route("/greet")
 def say_hello():
     return "Hello world"
 
-
 @app.route("/test")
 def test():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM userSocieties")
     cur.execute("SELECT * FROM userSocieties")
     data = cur.fetchall()
     cur.close()
@@ -52,9 +34,7 @@ def test():
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
-    user_id = request.args.get(
-        "user_id"
-    )  # need to change to request.form.get when real
+    user_id = request.args.get("user_id")  # need to change to request.form.get when real
     if not user_id:
         return "no user id"
 
@@ -79,21 +59,12 @@ def set_userinterest():
 
     if not user_id:
         return "missing user id"
-        return "missing user id"
     if not interest:
-        return "missing interest"
         return "missing interest"
     if not scale:
         return "missing scale"
 
-        return "missing scale"
-
     cur = mysql.connection.cursor()
-    # original value (just for testing)
-    cur.execute(
-        "SELECT scale FROM userInterests WHERE user_id = %s AND interest = %s;",
-        (user_id, interest),
-    )
     # original value (just for testing)
     cur.execute(
         "SELECT scale FROM userInterests WHERE user_id = %s AND interest = %s;",
