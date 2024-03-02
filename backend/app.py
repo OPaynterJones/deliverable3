@@ -24,19 +24,25 @@ def test():
     cur.execute('SELECT * FROM societies')
     data = cur.fetchall()
     cur.close()
-    return str(data)
+    return jsonify(data)
 
-@app.route('/uinterests')                       #its /uinterests?user_id=...  
-def return_userinterests():
+@app.route('/uinterests/<int:id>', methods=['GET'] )                       #its /uinterests?user_id=...  
+def return_userinterests(id):
+    try:
+       int(id)
+    except:
+       return jsonify({"error": "Invalid user ID format"}), 400
+    if id != 1 or 2 or 3:
+       return jsonify({"error": "No user found"})
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT interest, scale FROM userInterests WHERE user_id = {id}")
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
+
     user_id = request.args.get('user_id')       #need to change to request.form.get when real
     if not user_id:
        return "no user id"
-    
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM userInterests WHERE user_id = %s', (user_id,))
-    data = cur.fetchall()
-    cur.close()
-    return str(data)
 
 @app.route('/set_uinterest', methods=['GET', 'POST'])     #its /set_uinterest?user_id=...&interest=....&scale=...
 def set_userinterest():
