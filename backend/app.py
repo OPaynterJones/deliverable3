@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, json
 from flask_mysqldb import MySQL
 from flask_cors import CORS
 
@@ -12,6 +12,13 @@ app.config["MYSQL_PASSWORD"] = ""
 app.config["MYSQL_DB"] = "deliverable3_testing_db"
 
 mysql = MySQL(app)
+
+"""
+# unserialise JSON object from a string (force flask to read string as JSON)
+def handle_non_json():
+    data = json.loads(request.data)
+    return data
+"""
 
 # get all data from table users by user_id
 @app.route("/user_data")
@@ -27,7 +34,8 @@ def get_user_data():
 # get name from table users by user_id
 @app.route("/get_user_name")
 def get_user_name():
-    user_id = request.args.get("id", default=-1, type=int)
+    data = request.json
+    user_id = data.get("user_id")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"SELECT name FROM users WHERE user_id = {user_id}")
@@ -36,11 +44,15 @@ def get_user_name():
     return jsonify(data)
 
 # create new user set username, password, name to table users
-@app.route("/create_user")
+@app.route("/create_user", methods=["POST"])
 def set_user_data():
-    username = request.args.get("username", type=str)
-    password = request.args.get("password", type=str)
-    name     = request.args.get("name", type=str)
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    data = request.json
+
+    username = data.get("username")
+    password = data.get("password")
+    name     = data.get("name")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"INSERT INTO users (username, password, name) VALUES ({username}, {password}, {name})")
@@ -51,8 +63,12 @@ def set_user_data():
 # set updated password from table users by user_id
 @app.route("/update_user_password")
 def set_user_password():
-    user_id  = request.args.get("id", default=-1, type=int)
-    password = request.args.get("password", type=str)
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    data = request.json
+
+    user_id  = data.get("id")
+    password = data.get("password")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"UPDATE users SET password = {password} WHERE user_id = {user_id})")
@@ -61,10 +77,14 @@ def set_user_password():
     return jsonify({'message': "Password updated successfully"})
 
 # set updated name from table users by user_id
-@app.route("/update_name")
+@app.route("/update_user_name")
 def set_user_name():
-    user_id  = request.args.get("id", default=-1, type=int)
-    name = request.args.get("name", type=str)
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    data = request.json
+
+    user_id = data.get("id", default=-1, type=int)
+    name    = data.get("name", type=str)
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"UPDATE users SET password = {name} WHERE user_id = {user_id})")
