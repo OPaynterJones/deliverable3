@@ -50,7 +50,6 @@ def test():
     cur.close()
     return jsonify(data)
 
-
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
     user_id = request.args.get(
