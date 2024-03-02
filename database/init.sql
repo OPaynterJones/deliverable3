@@ -56,6 +56,12 @@ CREATE TABLE `userEvents` (
     FOREIGN KEY (`event_id`) REFERENCES `events`(`event_id`)
 );
 
+CREATE TABLE `sessions` (
+    `user_id` BIGINT UNSIGNED NOT NULL,
+    `session_token` VARCHAR(40) NOT NULL,
+    PRIMARY KEY (`user_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
 
 CREATE TABLE `sessions` (
     `user_id` BIGINT UNSIGNED NOT NULL,
@@ -167,9 +173,9 @@ INSERT INTO interests (interest, description, category) VALUES
 ('Relaxing', 'Engage in activities aimed at reducing stress and promoting relaxation.', 'Socializing'); 
 
 INSERT INTO users (email, password) VALUES 
-('am4103', 'password', 'afonso mendes', NULL),
-('ab1234', 'password1', 'test user 1', NULL),
-('ye1235', 'password2', 'test user 2', NULL);
+('am4103@bath.ac.uk', 'password', NULL),
+('ab1234@test.com', 'password1', NULL),
+('ye1235@test.com', 'password2', NULL);
 
 INSERT INTO userInterests (user_id, interest, scale)
 SELECT
