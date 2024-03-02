@@ -63,6 +63,13 @@ CREATE TABLE `sessions` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
 );
 
+CREATE TABLE `sessions` (
+    `user_id` BIGINT UNSIGNED NOT NULL,
+    `session_token` VARCHAR(40) NOT NULL,
+    PRIMARY KEY (`user_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
 -- Insert list of societies and some generic description
 INSERT INTO societies (name, description, picture) VALUES 
 ('ABACUS', 'The ABACUS society is for enthusiasts of mathematics and computing.', NULL),

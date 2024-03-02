@@ -1,43 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import InputField from "../../Components/AnimtedInputField/InputField";
-import "./LoginPage.css"; // Import CSS file
+import "./LoginPage.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isCreateAccount, setIsCreateAccount] = useState(false);
-  const [containerHeight, setContainerHeight] = useState("21rem");
-  const [submitButtonWidth, setButtonWidth] = useState("6rem");
-
-  useEffect(() => {
-    setContainerHeight(isCreateAccount ? "25rem" : "21rem");
-  }, [isCreateAccount]);
-
-  useEffect(() => {
-    setButtonWidth(isCreateAccount ? "10rem" : "6rem"); // fix this
-  }, [isCreateAccount]);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (isCreateAccount) {
-      console.log(
-        "Creating account with email:",
-        email,
-        "and password:",
-        password
-      );
-    } else {
-      console.log("Logging in with email:", email, "and password:", password);
-    }
-  };
 
   const toggleMode = () => {
     setIsCreateAccount(!isCreateAccount);
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch(
+        isCreateAccount
+          ? "http://localhost:5000/register"
+          : "http://localhost:5000/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }), // TODO can clean up now this is done, using auth header
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      if (isCreateAccount) {
+        console.log("Register successful");
+      } else {
+        console.log("Login successful");
+        console.log(response);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+    // window.location.reload();
+  };
+
   return (
-    <div className="login-container" style={{ height: containerHeight }}>
+    <div
+      className="login-container"
+      style={{ height: isCreateAccount ? "25rem" : "21rem" }}
+    >
       <h2 className="login-title">Sign in </h2>{" "}
       <h2 className="login-subtitle"> or create your account</h2>
       <form onSubmit={handleSubmit} className="login-form">
@@ -73,7 +86,7 @@ const LoginPage = () => {
           <button
             type="submit"
             className="login-create-button"
-            style={{ width: submitButtonWidth }}
+            style={{ width: isCreateAccount ? "10rem" : "6rem" }}
           >
             <span style={{ opacity: isCreateAccount ? 0 : 1 }}>Login</span>
             <span style={{ opacity: isCreateAccount ? 1 : 0 }}>
