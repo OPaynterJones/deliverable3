@@ -27,7 +27,7 @@ jobs:
       run: docker compose up -d
 
     - name: Show Docker containers
-      run: docker container ls && docker network inspect && docker network inspect deliverable3-dev_default
+      run: docker container ls && docker network ls && docker network inspect deliverable3-dev_default
 
 
     - name: Run backend tests
