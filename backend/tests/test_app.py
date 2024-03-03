@@ -15,6 +15,18 @@ DB_NAME = "deliverable3_testing_db"
 def get_db_connection():
     return pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db=DB_NAME)
 
+def test_database_connection():
+    # Send a GET request to an endpoint that retrieves data from the database
+    # Replace '/users' with the actual endpoint in your API
+    response = requests.get(f"{BASE_URL}/users")
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check that the response data is not empty
+    assert response.json() is not None
+
+
 
 def test_register_new_user():
     # Test data
