@@ -24,6 +24,7 @@ def test_register_new_user():
     # Send a POST request to the /register endpoint
     response = requests.post(f"{BASE_URL}/register", json=data)
 
+    print(str(response))
     # Check that the response status code is 201 (Created)
     assert response.status_code == 201
 
@@ -48,13 +49,13 @@ def test_register_existing_user():
 
     # Send a POST request to the /register endpoint
     response = requests.post(f"{BASE_URL}/register", json=data)
-
+    print(str(response))
     # Check that the response status code is 201 (Successful)
     assert response.status_code == 201
 
     # Send a POST request to the /register endpoint
     response = requests.post(f"{BASE_URL}/register", json=data)
-
+    print(str(response))
     # Check that the response status code is 500 (Internal Server Error)
     assert response.status_code == 500
 
@@ -81,7 +82,7 @@ def test_login_and_session_authorization():
 
     # Send a POST request to the /register endpoint to register a new user
     register_response = requests.post(f"{BASE_URL}/register", json=register_data)
-
+    print(str(register_response))
     # Check that the response status code is 201 (Created)
     assert register_response.status_code == 201
 
