@@ -33,7 +33,6 @@ services:
   db:
     container_name: db
     image: mysql:8.3
-    restart: always
     environment: 
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
       MYSQL_DATABASE: deliverable3_testing_db
