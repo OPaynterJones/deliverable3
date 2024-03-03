@@ -21,77 +21,299 @@ def handle_non_json():
 """
 
 # get all data from table users by user_id
-@app.route("/user_data")
+@app.route("/user_data", methods=["GET"])
 def get_user_data():
-    user_id = request.args.get("id", default=-1, type=int)
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id = request_data.get("id")
     
     cursor = mysql.connection.cursor()
     cursor.execute(f"SELECT * FROM users WHERE user_id = {user_id}")
-    data = cursor.fetchall()
+    fetch_data = cursor.fetchall()
     cursor.close()
-    return jsonify(data)
+    return jsonify(fetch_data)
 
+
+""" User Table """
 # get name from table users by user_id
-@app.route("/get_user_name")
+@app.route("/get_user_name", methods=["GET"])
 def get_user_name():
-    data = request.json
-    user_id = data.get("user_id")
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id = request_data.get("id")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"SELECT name FROM users WHERE user_id = {user_id}")
-    data = cursor.fetchall()
+    fetch_data = cursor.fetchall()
     cursor.close()
-    return jsonify(data)
+    return jsonify(fetch_data)
 
 # create new user set username, password, name to table users
 @app.route("/create_user", methods=["POST"])
 def set_user_data():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
-    data = request.json
+    request_data = request.json
 
-    username = data.get("username")
-    password = data.get("password")
-    name     = data.get("name")
+    username = request_data.get("username")
+    password = request_data.get("password")
+    name     = request_data.get("name")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"INSERT INTO users (username, password, name) VALUES ({username}, {password}, {name})")
     mysql.connection.commit()
     cursor.close()
-    return jsonify({'message': "User added successfully"})
+    return jsonify({"message": "User added successfully"})
 
-# set updated password from table users by user_id
-@app.route("/update_user_password")
+# set updated user password by user_id
+@app.route("/update_user_password", methods=["POST"])
 def set_user_password():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
-    data = request.json
+    request_data = request.json
 
-    user_id  = data.get("id")
-    password = data.get("password")
+    user_id  = request_data.get("id")
+    password = request_data.get("password")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE users SET password = {password} WHERE user_id = {user_id})")
+    cursor.execute(f"UPDATE users SET password = {password} WHERE user_id = {user_id}")
     mysql.connection.commit()
     cursor.close()
-    return jsonify({'message': "Password updated successfully"})
+    return jsonify({"message": "Password updated successfully"})
 
-# set updated name from table users by user_id
-@app.route("/update_user_name")
+# set updated user name by user_id
+@app.route("/update_user_name", methods=["POST"])
 def set_user_name():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
-    data = request.json
+    request_data = request.json
 
-    user_id = data.get("id", default=-1, type=int)
-    name    = data.get("name", type=str)
+    user_id = request_data.get("id")
+    name    = request_data.get("name")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE users SET password = {name} WHERE user_id = {user_id})")
+    cursor.execute(f"UPDATE users SET password = {name} WHERE user_id = {user_id}")
     mysql.connection.commit()
     cursor.close()
-    return jsonify({'message': "Name updated successfully"})
+    return jsonify({"message": "Name updated successfully"})
 
+
+""" Societies Table """
+# get society name by society_id
+@app.route("/get_society_name", methods=["GET"])
+def get_society_name():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    society_id = request_data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT name FROM societies WHERE society_id = {society_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+# create new society set name to table societies
+@app.route("/create_society")
+def set_society_data():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    name = request_data.get("name")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"INSERT INTO societies (name) VALUES ({name})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "Society added successfully"})
+
+# update society name by society_id
+@app.route("/update_society_name", methods=["POST"])
+def set_society_name():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    society_id = request_data.get("id")
+    name       = request_data.get("name")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"UPDATE societies SET name = {name} WHERE society_id = {society_id}")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "Name updated successfully"})
+
+
+""" Events Table """
+# get event name by event_id
+@app.route("/get_event_name", methods=["GET"])
+def get_event_name():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    event_id = request_data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT name FROM events WHERE event_id = {event_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+# get event by society_id
+@app.route("/get_society_events", methods=["GET"])
+def get_society_events():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    society_id = request_data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT event_id, name FROM events WHERE society_id = {society_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+# create new event set society_id, name to table events
+@app.route("/create_event", methods=["POST"])
+def set_event_data():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    society_id = request_data.get("society_id")
+    name       = request_data.get("name")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"INSERT INTO events (society_id, name) VALUES ({society_id}, {name})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "Event added successfully"})
+
+# update event name by event_id
+@app.route("/update_event_name", methods=["POST"])
+def set_event_name():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    event_id = request_data.get("id")
+    name     = request_data.get("name")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"UPDATE events SET name = {name} WHERE event_id = {event_id}")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "Name updated successfully"})
+
+# update event datetime by event_id
+@app.route("/update_event_time", methods=["POST"])
+def set_event_time():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    event_id = request_data.get("id")
+    datetime = request_data.get("datetime") # in mySQL format YYYY-MM-DD HH:MI:SS
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"UPDATE events SET datetime = {datetime} WHERE event_id = {event_id}")
+    mysql.connection.commit()
+    cursor.close()
+    return json({"message": "DateTime updated successfully"})
+
+
+""" User interest Table """
+# get user interest scores
+@app.route("/get_user_interests", methods=["GET"])
+def get_user_interests():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id = request_data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT interest, scale FROM userInterests WHERE user_id = {user_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+# update user interest scores
+@app.route("/update_user_interests")
+def set_user_interests():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id         = request_data.get("id")
+    interest_scores = request_data.get("interest_scores") # json array of [[interest, scale]]
+
+    """
+    need to figure out how to break down the array of interest scores to update the db
+    """
+
+
+    return jsonify({"message": "Interests updated successfully"})
+
+
+""" User societies Table """
+# get user role by user_id and society_id
+@app.route("/get_user_society_role", methods=["GET"])
+def get_user_society_role():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id    = request_data("user_id")
+    society_id = request_data.get("society_id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT role FROM userSocieties WHERE user_id = {user_id} AND society_id = {society_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+@app.route("/add_user_society_member", methods=["POST"])
+def set_user_society_member():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id    = request_data("user_id")
+    society_id = request_data.get("society_id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"INSERT INTO userSocieties (society_id, user_id) VALUES ({user_id}, {society_id})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "User added to society successfully"})
+
+@app.route("/update_user_society_role", methods=["POST"])
+def set_user_society_role():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id    = request_data("user_id")
+    society_id = request_data.get("society_id")
+    role       = request_data.get("role")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"UPDATE userSocieties SET role = {role} WHERE user_id = {user_id} AND society_id = {society_id}")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "Role updated successfully"})
+
+
+""" User events Table """
 
 
 
