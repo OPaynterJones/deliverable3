@@ -24,16 +24,14 @@ jobs:
       run: docker compose build
       
     - name: Start Docker dev images
-      run: docker compose up
-
-    - name: Show Docker containers
-      run: docker container ls && docker network ls && docker network inspect deliverable3-dev_default
+      run: docker compose up -d
 
     - name: Wait for database
       run: |
         for i in {1..10}; do
           if docker exec db mysql -uroot -e 'SELECT 1' > /dev/null 2>&1; then
             echo "Database is ready"
+            sleep 10
             break
           else
             echo "Waiting for database..."
