@@ -63,13 +63,6 @@ CREATE TABLE `sessions` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
 );
 
-CREATE TABLE `sessions` (
-    `user_id` BIGINT UNSIGNED NOT NULL,
-    `session_token` VARCHAR(40) NOT NULL,
-    PRIMARY KEY (`user_id`),
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
-);
-
 -- Insert list of societies and some generic description
 INSERT INTO societies (name, description, picture) VALUES 
 ('ABACUS', 'The ABACUS society is for enthusiasts of mathematics and computing.', NULL),
@@ -173,9 +166,9 @@ INSERT INTO interests (interest, description, category) VALUES
 ('Relaxing', 'Engage in activities aimed at reducing stress and promoting relaxation.', 'Socializing'); 
 
 INSERT INTO users (email, password) VALUES 
-('am4103@bath.ac.uk', 'password', NULL),
-('ab1234@test.com', 'password1', NULL),
-('ye1235@test.com', 'password2', NULL);
+('am4103@bath.ac.uk', 'password'),
+('ab1234@test.com', 'password1'),
+('ye1235@test.com', 'password2');
 
 INSERT INTO userInterests (user_id, interest, scale)
 SELECT
