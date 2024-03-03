@@ -23,6 +23,9 @@ jobs:
     - name: Build Docker dev images
       run: docker compose build
 
+    - name: Show Docker containers
+      run: docker container ls
+
     - name: Start Docker dev images
       run: docker compose up -d
 
