@@ -24,7 +24,7 @@ jobs:
       run: docker compose build
       
     - name: Start Docker dev images
-      run: docker compose up -d
+      run: docker compose up
 
     - name: Show Docker containers
       run: docker container ls && docker network ls && docker network inspect deliverable3-dev_default
