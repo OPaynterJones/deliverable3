@@ -31,4 +31,4 @@ jobs:
 
 
     - name: Run backend tests
-      run: docker exec backend pytest tests/
+      run: docker exec backend pytest -s tests/
