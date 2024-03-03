@@ -31,7 +31,7 @@ def test_simple_db_query():
     cur = conn.cursor()
 
     # Perform a simple query (replace with your actual query)
-    cur.execute("SELECT COUNT(*) FROM users")
+    cur.execute("SELECT * FROM users")
 
     # Fetch the result
     result = cur.fetchone()
