@@ -24,7 +24,7 @@ jobs:
       run: docker compose build
 
     - name: Start Docker dev images
-      run: docker compose up deliverable3-dev
+      run: docker compose up
 
     - name: Run backend tests
       run: docker exec backend pytest tests/
