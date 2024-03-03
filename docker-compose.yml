@@ -1,3 +1,4 @@
+name: deliverable3-dev
 services: 
   frontend:
     image: morsultra/deliverable3:frontend
