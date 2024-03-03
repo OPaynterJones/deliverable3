@@ -1,6 +1,7 @@
 name: deliverable3-dev
 services: 
   frontend:
+    container_name: frontend
     image: morsultra/deliverable3:frontend
     build:
       context: ./frontend
@@ -16,6 +17,7 @@ services:
       - db
 
   backend: 
+    container_name: backend
     image: morsultra/deliverable3:backend
     build: 
       context: ./backend
@@ -28,7 +30,8 @@ services:
       FLASK_DEBUG: 1
     depends_on: 
       - db
-  db: 
+  db:
+    container_name: db
     image: mysql:8.3
     restart: always
     environment: 
