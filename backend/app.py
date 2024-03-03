@@ -19,7 +19,7 @@ app.config["MYSQL_DB"] = "deliverable3_testing_db"
 mysql = MySQL(app)
 
 @app.route('/ping', methods=['GET'])
-def test_db_connection():
+def ping():
     try:
         # Try to connect to the database
         conn = mysql.connection
