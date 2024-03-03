@@ -18,24 +18,20 @@ app.config["MYSQL_DB"] = "deliverable3_testing_db"
 
 mysql = MySQL(app)
 
+@app.route('/ping', methods=['GET'])
+def test_db_connection():
+    try:
+        # Try to connect to the database
+        conn = mysql.connection
+        cur = conn.cursor()
 
-@app.route("/")
-def index():
-    return "Server Works!"
+        # If the connection is successful, close it and return a success message
+        cur.close()
+        return jsonify({"message": "Database connection successful"}), 200
+    except Exception as e:
+        # If the connection fails, return an error message
+        return jsonify({"message": f"Database connection failed: {str(e)}"}), 500
 
-
-@app.route("/greet")
-def say_hello():
-    return "Hello world"
-
-
-@app.route("/test")
-def test():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM userSocieties")
-    data = cur.fetchall()
-    cur.close()
-    return jsonify(data)
 
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
