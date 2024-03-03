@@ -22,12 +22,13 @@ jobs:
 
     - name: Build Docker dev images
       run: docker compose build
-
-    - name: Show Docker containers
-      run: docker container ls
-
+      
     - name: Start Docker dev images
       run: docker compose up -d
+
+    - name: Show Docker containers
+      run: docker container ls && docker exec backend ping db && docker network inspect && docker network inspect deliverable3-dev_default
+
 
     - name: Run backend tests
       run: docker exec backend pytest tests/
