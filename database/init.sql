@@ -38,6 +38,15 @@ CREATE TABLE `userInterests` (
     FOREIGN KEY (`interest`) REFERENCES `interests`(`interest`)
 );
 
+CREATE TABLE `eventsInterests` (
+    `event_id` BIGINT UNSIGNED NOT NULL,
+    `interest` VARCHAR(255) NOT NULL,
+    `scale` TINYINT NOT NULL,
+    PRIMARY KEY (`event_id`, `interest`),
+    FOREIGN KEY (`event_id`) REFERENCES `events`(`event_id`),
+    FOREIGN KEY (`interest`) REFERENCES `interests`(`interest`)
+);
+
 CREATE TABLE `userSocieties` (
     `society_id` BIGINT UNSIGNED NOT NULL,
     `user_id` BIGINT UNSIGNED NOT NULL,
@@ -174,7 +183,7 @@ INSERT INTO userInterests (user_id, interest, scale)
 SELECT
     users.user_id,
     interests.interest,
-    0 AS scale             
+    64 AS scale             
 FROM
     users, interests;
 
