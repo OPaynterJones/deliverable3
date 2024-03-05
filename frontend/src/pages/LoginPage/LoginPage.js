@@ -1,16 +1,46 @@
-import React, { useState } from "react";
-import InputField from "../../Components/AnimtedInputField/InputField";
+import React, { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import "./LoginPage.css";
+import InputField from "../../Components/AnimtedInputField/InputField";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isCreateAccount, setIsCreateAccount] = useState(false);
+  const [isAuthenticated, setAuthenticated] = useState(null);
+  const navigate = useNavigate();
 
-  const toggleMode = () => {
-    setIsCreateAccount(!isCreateAccount);
-  };
+  // check if user is logged in when login page mounts
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      console.log("authenticating user");
+      try {
+        const response = await fetch("http://localhost:5000/check_session", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message);
+        }
+
+        console.log("already logged in");
+        setAuthenticated(true);
+      } catch (error) {
+        console.error(error.message);
+        console.log("no sesssion exists");
+        setAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (isAuthenticated) {
+    return <Navigate to="for-you" replace />;
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -36,14 +66,15 @@ const LoginPage = () => {
 
       if (isCreateAccount) {
         console.log("Register successful");
+        // TODO display new message
       } else {
         console.log("Login successful");
-        console.log(response);
+        window.location.reload();
       }
     } catch (error) {
       console.error(error.message);
     }
-    // window.location.reload();
+    
   };
 
   return (
@@ -79,7 +110,7 @@ const LoginPage = () => {
           <button
             type="button"
             className="create-account-button"
-            onClick={toggleMode}
+            onClick={() => setIsCreateAccount(!isCreateAccount)}
           >
             {isCreateAccount ? "Back to Login" : "Create New Account"}
           </button>

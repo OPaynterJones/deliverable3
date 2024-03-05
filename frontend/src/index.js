@@ -61,7 +61,6 @@ const RequireAuth = () => {
     return null;
   }
 
-
   if (!authenticated) {
     console.log("no existing session, goign to login");
     return <Navigate to="/login" />;
