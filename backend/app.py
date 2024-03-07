@@ -281,6 +281,7 @@ def get_user_society_role():
     cursor.close()
     return jsonify(fetch_data)
 
+# add user to society by user_id and society_id
 @app.route("/add_user_society_member", methods=["POST"])
 def set_user_society_member():
     if not request.is_json:
@@ -296,6 +297,7 @@ def set_user_society_member():
     cursor.close()
     return jsonify({"message": "User added to society successfully"})
 
+# set user role by user_id and society_id
 @app.route("/update_user_society_role", methods=["POST"])
 def set_user_society_role():
     if not request.is_json:
@@ -314,7 +316,73 @@ def set_user_society_role():
 
 
 """ User events Table """
+# get event by user_id and event_id
+@app.route("/get_user_events", methods=["GET"])
+def get_user_events():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
 
+    user_id = request_data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT event_id FROM userEvents WHERE user_id = {user_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+# add user to event by user_id and event_id
+@app.route("/add_user_event_member", methods=["POST"])
+def set_user_event_member():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    user_id  = request_data.get("user_id")
+    event_id = request_data.get("event_id")
+
+    cursor = mysql.connection.cursor()
+    # !!!
+    # WHY IS USER_EVENT PRIMARY_KEY = {user_id, event_id}!!! In userSocieties Primary_key = {society_id, user_id}
+    # !!!
+    cursor.execute(f"INSERT INTO userEvents (user_id, event_id) VALUES ({user_id}, {event_id})")
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({"message": "User added to event successfully"})
+
+
+""" Events interest Table """
+# get event interest scores
+@app.route("/get_event_interests", methods=["GET"])
+def get_event_interests():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    event_id = request_data.get("id")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT interest, scale FROM eventInterests WHERE event_id = {event_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+# update event interest scores
+@app.route("/update_event_interests")
+def set_event_interests():
+    if not request.is_json:
+        return jsonify({"message": "Content type not supported (Not json)"})
+    request_data = request.json
+
+    event_id        = request_data.get("id")
+    interest_scores = request_data.get("interest_scores") # json array of [[interest, scale]]
+
+    """
+    need to figure out how to break down the array of interest scores to update the db
+    """
+
+
+    return jsonify({"message": "Interests updated successfully"})
 
 
 
