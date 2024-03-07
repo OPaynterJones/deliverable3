@@ -230,6 +230,17 @@ def set_event_time():
     return json({"message": "DateTime updated successfully"})
 
 
+""" Interests Table """
+# get all interests
+@app.route("/get_interests", methods=["GET"])
+def get_interests():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT interest FROM interests")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
+
 """ User interest Table """
 # get user interest scores
 @app.route("/get_user_interests", methods=["GET"])
