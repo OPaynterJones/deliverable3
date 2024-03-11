@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL, MySQLdb
 from flask_cors import CORS
 import bcrypt
 import uuid
+from algorithm import train
 
 
 app = Flask(__name__)
@@ -32,7 +33,9 @@ def ping():
         # If the connection fails, return an error message
         return jsonify({"message": f"Database connection failed: {str(e)}"}), 500
 
-
+@app.route('/train')
+def train_algorithm():
+    return train()
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
