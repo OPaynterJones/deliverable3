@@ -1,3 +1,4 @@
+import os
 import requests
 import pymysql
 import uuid
@@ -15,6 +16,7 @@ DB_NAME = "deliverable3_testing_db"
 def get_db_connection():
     return pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db=DB_NAME)
 
+
 def test_db_connection_endpoint():
     # Send a GET request to the /test_db_connection endpoint
     response = requests.get(f"{BASE_URL}/ping")
@@ -24,6 +26,7 @@ def test_db_connection_endpoint():
 
     # Check the response data
     assert response.json() == {"message": "Database connection successful"}
+
 
 def test_simple_db_query():
     # Connect to the database
@@ -42,6 +45,7 @@ def test_simple_db_query():
     # Close the cursor and the connection
     cur.close()
     conn.close()
+
 
 def test_register_new_user():
     # Test data
@@ -144,3 +148,48 @@ def test_login_and_session_authorization():
 
     # Check the response data
     assert check_session_response.json() == {"message": "User is logged in"}
+
+
+def test_get_image():
+    # Test image filename
+    filename = "test-image.png"
+
+    # Create a test image file
+    with open(f"images/{filename}", "wb") as f:
+        f.write(b"test image content")
+
+    try:
+        # Send a GET request to the /images/<filename> endpoint
+        response = requests.get(f"{BASE_URL}/images/{filename}")
+
+        # Check that the response status code is 200 (OK)
+        assert response.status_code == 200
+
+        # Check the response content
+        assert response.content == b"test image content"
+    finally:
+        # Clean up: Delete the test image file
+        os.remove(f"images/{filename}")
+
+
+def test_get_random_event():
+
+    # Send a GET request to the endpoint
+    response = requests.get(f"{BASE_URL}/recommend_event")
+
+    # Assert status code is 200 (success)
+    assert response.status_code == 200
+
+    # Parse JSON response
+    data = response.json()
+    print(response.content)
+    # Assert data is a dictionary
+    assert isinstance(data, dict)
+
+    # Assert expected keys are present
+    assert "id" in data
+    assert "title" in data
+    assert "description" in data
+    assert "time" in data
+    assert "image_url" in data
+    assert "society_id" in data
