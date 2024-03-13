@@ -45,11 +45,9 @@ const RequireAuth = () => {
           throw new Error(errorData.message);
         }
 
-        console.log("already logged in, going to outlet");
         setAuthenticated(true);
       } catch (error) {
         console.error(error.message);
-        console.log("no existing session, going to login");
         setAuthenticated(false);
       }
     };
@@ -77,7 +75,7 @@ const App = () => (
       <Route path="/login" element={<LoginPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/for-you" element={<ForYouPage />} />
-        <Route path="*" element={<Navigate to="/for-you" replace />} />
+        {/* <Route path="*" element={<Navigate to="/for-you" replace />} /> */}
       </Route>
     </Routes>
     <BodyStyleManager />

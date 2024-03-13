@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import "./LoginPage.css";
 import InputField from "../../Components/AnimtedInputField/InputField";
 
@@ -9,7 +9,6 @@ const LoginPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isCreateAccount, setIsCreateAccount] = useState(false);
   const [isAuthenticated, setAuthenticated] = useState(null);
-  const navigate = useNavigate();
 
   // check if user is logged in when login page mounts
 
@@ -39,7 +38,7 @@ const LoginPage = () => {
   }, []);
 
   if (isAuthenticated) {
-    return <Navigate to="for-you" replace />;
+    return <Navigate to="/for-you" replace />;
   }
 
   const handleSubmit = async (event) => {
@@ -74,7 +73,6 @@ const LoginPage = () => {
     } catch (error) {
       console.error(error.message);
     }
-    
   };
 
   return (

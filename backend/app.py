@@ -1,4 +1,6 @@
-from flask import Flask, jsonify, request, make_response
+import sys
+import time
+from flask import Flask, jsonify, request, make_response, send_from_directory
 from flask_mysqldb import MySQL, MySQLdb
 from flask_cors import CORS
 import bcrypt
@@ -19,7 +21,56 @@ app.config["MYSQL_DB"] = "deliverable3_testing_db"
 
 mysql = MySQL(app)
 
-@app.route('/ping', methods=['GET'])
+
+# @app.route("/uinterests")  # its /uinterests?user_id=...
+# def return_userinterests():
+#     user_id = request.args.get(
+#         "user_id"
+#     )  # need to change to request.form.get when real
+#     if not user_id:
+#         return "no user id"
+
+#     cur = mysql.connection.cursor()
+#     cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user_id,))
+#     data = cur.fetchall()
+#     cur.close()
+#     return jsonify(data)
+
+
+# @app.route(
+#     "/set_uinterest", methods=["GET", "POST"]
+# )  # its /set_uinterest?user_id=...&interest=....&scale=...
+# def set_userinterest():
+#     user_id = request.args.get("user_id")  # need to change to form
+#     interest = request.args.get("interest")
+#     scale = request.args.get("scale")
+
+#     if not user_id:
+#         return "missing user id"
+#     if not interest:
+#         return "missing interest"
+#     if not scale:
+#         return "missing scale"
+
+#     cur = mysql.connection.cursor()
+#     # original value (just for testing)
+#     cur.execute(
+#         "SELECT scale FROM userInterests WHERE user_id = %s AND interest = %s;",
+#         (user_id, interest),
+#     )
+#     old_scale = cur.fetchone()
+#     # update
+#     cur.execute(
+#         "UPDATE userInterests SET scale = %s WHERE user_id = %s AND interest = %s;",
+#         (scale, user_id, interest),
+#     )
+#     mysql.connection.commit()  # commit changes
+#     cur.close()
+
+#     return f"Interest changed for user {user_id}: {interest} {old_scale[0]} -> {scale}"
+
+
+@app.route("/ping", methods=["GET"])
 def ping():
     try:
         # Try to connect to the database
@@ -171,6 +222,48 @@ def check_session():
     else:
         app.logger.debug("Invalid session token")
         return jsonify({"message": "Invalid session token"}), 401
+
+
+@app.route("/recommend_event")
+def get_recommended_event():
+    try:
+        conn = mysql.connection
+        cur = conn.cursor()
+
+        # Execute query to get random event
+        query = "SELECT * FROM events ORDER BY RAND() LIMIT 1;"
+        cur.execute(query)
+        event = cur.fetchone()
+
+        # Check if event is found
+        if event:
+            # Prepare data with image path
+            event_data = {
+                "id": event[0],
+                "title": event[1],
+                "description": event[2],
+                "location": event[3],
+                "time": event[4],
+                "image_url": f"http://localhost:5000/images/{event[5]}",  # Construct image URL
+                "society_id": event[6],
+            }
+            return jsonify(event_data), 200
+        else:
+            return jsonify({"message": "No events found"}), 404
+
+    except Exception as e:
+        return jsonify({"message": f"Error fetching events: {str(e)}"}), 500
+
+
+@app.route("/images/<filename>")
+def get_image(filename):
+    try:
+        return send_from_directory("images", filename)
+    except FileNotFoundError:
+        return jsonify({"message": "Image not found"}), 404
+
+    except Exception as e:
+        return jsonify({"message": "An error occurred"}), 500
 
 
 if __name__ == "__main__":
