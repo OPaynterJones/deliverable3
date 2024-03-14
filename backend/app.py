@@ -1,11 +1,13 @@
 import sys
 import time
+
+import numpy as np
 from flask import Flask, jsonify, request, make_response, send_from_directory
 from flask_mysqldb import MySQL, MySQLdb
 from flask_cors import CORS
 import bcrypt
 import uuid
-from algorithm import train, predict
+from algorithm import train, predict_interest
 
 
 app = Flask(__name__)
@@ -75,35 +77,49 @@ def ping():
     try:
         # Try to connect to the database
         conn = mysql.connection
-        cur = conn.cursor()
-        cur.execute("SHOW TABLES")
-        data = cur.fetchall()
-        # If the connection is successful, close it and return a success message
-        cur.close()
-        return jsonify({"message": "Database connection successful"}, {"tables": data}), 200
+        return jsonify({"message": "Database connection successful"}), 200
     except Exception as e:
         # If the connection fails, return an error message
         return jsonify({"message": f"Database connection failed: {str(e)}"}), 500
+    
+@app.route('/predict', methods=["GET"])
+def predict():
+    request_data = request.json
+    user_id = request_data.get("user_id")
 
-@app.route('/predict')
-def train_algorithm():
-    user_id = request.get_json()["user_id"]
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT scale FROM userInterests WHERE user_id = {user_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+
+    interests_array = np.array([item[0] for item in fetch_data]).reshape(1, -1)
+    predictions = predict_interest(interests_array)
+
+    # Update predicted interests in interestPredictions table
+    cursor = mysql.connection.cursor()
+    for prediction in predictions:
+        society_name, predicted_interest = prediction
+        cursor.execute(
+            f"UPDATE interestPredictions SET predicted_interest = {predicted_interest} WHERE name = '{society_name}' AND user_id = {user_id}"
+        )
+    mysql.connection.commit()
+    cursor.close()
+
+    return jsonify(predictions)
+
+@app.route("/tables")
+def return_tables():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT scale FROM userInterests WHERE user_id = %s", (user_id,))
-    interests = cur.fetchall()
+    cur.execute("SELECT * FROM interestPredictions WHERE user_id = 1")
+    data = cur.fetchall()
     cur.close()
-    return jsonify(interests)
+    
+    return str(data)
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
-    user_id = request.args.get(
-        "user_id"
-    )  # need to change to request.form.get when real
-    if not user_id:
-        return "no user id"
-
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user_id,))
+    cur.execute("SELECT * FROM interests")
     data = cur.fetchall()
     cur.close()
     return jsonify(data)

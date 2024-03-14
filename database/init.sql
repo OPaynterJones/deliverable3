@@ -27,8 +27,7 @@ CREATE TABLE `users` (
 
 CREATE TABLE `interests` (
     `interest` VARCHAR(255) NOT NULL PRIMARY KEY,
-    `description` TEXT NULL,
-    `category` ENUM('Sport', 'Games', 'Socializing', 'Academic', 'Creative') NOT NULL
+    `description` TEXT NULL
 );
 
 CREATE TABLE `userInterests` (
@@ -74,6 +73,15 @@ CREATE TABLE `sessions` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
 );
 
+CREATE TABLE `interestPredictions` (
+    `user_id` BIGINT UNSIGNED NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `predicted_interest` DECIMAL(3,2) NOT NULL,
+    PRIMARY KEY (`name`, `user_id`),
+    FOREIGN KEY (`name`) REFERENCES `societies`(`name`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
 INSERT INTO societies (name, description, image_url) VALUES 
 ('ABACUS', 'The ABACUS society is for enthusiasts of mathematics and computing.', NULL),
 ('Badminton', 'Join our Badminton society for friendly matches and tournaments.', NULL),
@@ -116,63 +124,78 @@ INSERT INTO societies (name, description, image_url) VALUES
 ('Urban Dance', 'From street to contemporary, express yourself through urban dance.', NULL),
 ('Water polo', 'Experience the excitement of water polo with our society.', NULL);
 
-INSERT INTO interests (interest, description, category) VALUES 
-('Contact Sports', 'Engage in physical activities involving direct contact with opponents.', 'Sport'),
-('Tabletop', 'Enjoy board games, card games, and other tabletop gaming activities.', 'Games'),
-('Pub', 'Socialize and relax in pub environments, often involving drinks and conversation.', 'Socializing'),
-('Humanities', 'Explore various aspects of human culture, such as history, philosophy, and literature.', 'Academic'),
-('Dance', 'Express yourself through rhythmic movement and choreography.', 'Creative'),
-('Combat Sport', 'Participate in sports involving physical combat or self-defense techniques.', 'Sport'),
-('Cards', 'Play card games and enjoy strategic thinking and luck-based gameplay.', 'Games'),
-('Outdoor', 'Enjoy activities and events that take place in outdoor environments.', 'Socializing'),
-('Religion', 'Discuss and study beliefs, rituals, and spiritual practices of different religions.', 'Academic'),
-('Singing', 'Express yourself through vocal performance and harmonization.', 'Creative'),
-('Running', 'Engage in the physical activity of running, either competitively or recreationally.', 'Sport'),
-('Videogames', 'Play electronic games involving interaction with a user interface to generate visual feedback.', 'Games'),
-('Indoor Sports', 'Participate in activities and events that take place indoors.', 'Sport'),
-('Literature', 'Explore written works, including novels, poetry, and essays.', 'Academic'),
-('Acting', 'Portray characters and perform dramatic roles in theatrical productions.', 'Creative'),
-('Water Sport', 'Participate in sports and recreational activities that take place in or on water.', 'Sport'),
-('Fantasy', 'Explore imaginative settings and elements often found in literature and entertainment.', 'Games'),
-('Performance', 'Engage in activities involving public presentation or entertainment.', 'Creative'),
-('Politics', 'Discuss and engage in activities related to governance, political systems, and policies.', 'Academic'),
-('Culture', 'Explore and celebrate the customs, traditions, and arts of different societies.', 'Creative'),
-('Racket Sport', 'Engage in sports involving the use of rackets or paddles, such as tennis or badminton.', 'Sport'),
-('Role Play', 'Take on fictional roles and engage in collaborative storytelling.', 'Games'),
-('International Politics', 'Discuss and analyze interactions between nations and global affairs.', 'Academic'),
-('Law', 'Study legal systems, principles, and practices.', 'Academic'),
-('Public Speaking', 'Develop and practice the skill of delivering speeches and presentations to an audience.', 'Creative'),
-('Ball Sport', 'Participate in sports involving the use of balls, such as soccer, basketball, or volleyball.', 'Sport'),
-('Individual', 'Engage in activities that focus on personal development and solitary pursuits.', 'Socializing'),
-('Internal Politics', 'Discuss and engage in activities related to organizational or group governance and dynamics.', 'Academic'),
-('History', 'Study past events, societies, and civilizations.', 'Academic'),
-('Fitness', 'Participate in activities aimed at improving physical health and conditioning.', 'Sport'),
-('Technical', 'Engage in activities involving specialized knowledge or skills, often related to technology or machinery.', 'Socializing'),
-('Finance', 'Study and manage monetary resources, investments, and financial systems.', 'Academic'),
-('Crafts', 'Create handmade objects or artworks through skilled craftsmanship.', 'Creative'),
-('Health', 'Focus on activities and practices aimed at promoting physical and mental well-being.', 'Sport'),
-('Inclusive', 'Promote and participate in activities that welcome and accommodate diverse participants.', 'Socializing'),
-('Business', 'Explore and engage in activities related to commerce, trade, and entrepreneurship.', 'Academic'),
-('Design', 'Create and innovate in fields such as graphic design, industrial design, or architecture.', 'Creative'),
-('Strength', 'Focus on activities aimed at developing physical strength and power.', 'Sport'),
-('Community', 'Engage with and contribute to local or online communities.', 'Socializing'),
-('Science', 'Explore the natural world through observation, experimentation, and analysis.', 'Academic'),
-('Spectating', 'Enjoy watching and observing sports, performances, or other events.', 'Creative'),
-('Travel', 'Explore new destinations and cultures through travel and adventure.', 'Socializing'),
-('Technology', 'Explore and engage with advancements in science and engineering.', 'Academic'),
-('Music', 'Appreciate, perform, or create music across various genres and styles.', 'Creative'),
-('Asia', 'Explore the cultures, history, and geography of Asian countries and regions.', 'Socializing'),
-('Software', 'Engage with and develop software applications and computer programs.', 'Academic'),
-('Film & TV', 'Enjoy and analyze movies, television shows, and cinematic storytelling.', 'Creative'),
-('Europe', 'Explore the cultures, history, and geography of European countries and regions.', 'Socializing'),
-('Data', 'Analyze and interpret data to derive insights and make informed decisions.', 'Academic'),
-('Clothing', 'Explore fashion trends, styles, and clothing design.', 'Creative'),
-('Americas', 'Explore the cultures, history, and geography of the Americas.', 'Socializing'),
-('Mathematics', 'Explore mathematical concepts, theories, and applications.', 'Academic'),
-('Visual', 'Engage with and create visual artworks, including drawing, painting, and photography.', 'Creative'),
-('Discussion', 'Engage in conversations and debates on various topics and issues.', 'Socializing'),
-('Commitment', 'Participate in activities or organizations with a dedicated and loyal mindset.', 'Socializing'),
-('Relaxing', 'Engage in activities aimed at reducing stress and promoting relaxation.', 'Socializing'); 
+INSERT INTO interests (interest, description) VALUES 
+('Academic', 'Interest in academic pursuits and intellectual activities'),
+('Acting', 'Interest in performing arts and theatrical activities'),
+('Americas', 'Interest in the Americas region and its culture'),
+('Art', 'Interest in visual arts and creative expression'),
+('Asia', 'Interest in the Asian region and its culture'),
+('Ball Sport', 'Interest in sports involving a ball, such as football, basketball, etc.'),
+('Beginner', 'Interest in beginner-level activities or hobbies'),
+('Business', 'Interest in business and entrepreneurial endeavors'),
+('Card Games', 'Interest in playing card games and related activities'),
+('Clothing', 'Interest in fashion and clothing-related topics'),
+('Combat', 'Interest in combat sports and martial arts'),
+('Community', 'Interest in community involvement and social activities'),
+('Commitment', 'Interest in making commitments and sticking to them'),
+('Competitive', 'Interest in competitive activities and challenges'),
+('Contact', 'Interest in physical contact sports and activities'),
+('Crafts', 'Interest in arts and crafts activities and DIY projects'),
+('Creative', 'Interest in creative expression and innovative thinking'),
+('Culture', 'Interest in exploring different cultures and traditions'),
+('Dance', 'Interest in dancing and rhythmic movement'),
+('Data', 'Interest in data analysis and data-related activities'),
+('Debating', 'Interest in engaging in debates and discussions'),
+('Design', 'Interest in design principles and aesthetic concepts'),
+('Discussion', 'Interest in having discussions and exchanging ideas'),
+('Entertainment', 'Interest in entertainment and leisure activities'),
+('Europe', 'Interest in the European region and its culture'),
+('Fantasy', 'Interest in fantasy worlds and imaginative storytelling'),
+('Finance', 'Interest in financial matters and investment opportunities'),
+('Film & TV', 'Interest in movies, television shows, and cinematic experiences'),
+('Fitness', 'Interest in physical fitness and exercise routines'),
+('Food & Drink', 'Interest in culinary experiences and beverage choices'),
+('Games', 'Interest in playing games and recreational activities'),
+('Health', 'Interest in maintaining good health and well-being'),
+('History', 'Interest in historical events and past civilizations'),
+('Humanities', 'Interest in humanities disciplines and cultural studies'),
+('Inclusive', 'Interest in promoting inclusivity and diversity'),
+('Individual', 'Interest in individual pursuits and personal development'),
+('Indoors', 'Interest in indoor activities and indoor environments'),
+('International Politics', 'Interest in global political issues and diplomatic relations'),
+('Internal Politics', 'Interest in domestic political matters and government policies'),
+('Law', 'Interest in legal principles and justice systems'),
+('Literature', 'Interest in literary works and written expression'),
+('Mathematics', 'Interest in mathematical concepts and problem-solving'),
+('Music', 'Interest in musical compositions and sonic experiences'),
+('Outdoors', 'Interest in outdoor activities and nature exploration'),
+('Performance', 'Interest in performing in front of an audience'),
+('Politics', 'Interest in political ideologies and governance structures'),
+('Pub', 'Interest in socializing and gathering at pubs or bars'),
+('Public Speaking', 'Interest in public speaking and oratory skills'),
+('Racket / Bat Sport', 'Interest in sports involving rackets or bats, such as tennis, badminton, etc.'),
+('Reading', 'Interest in reading books and written literature'),
+('Relaxing', 'Interest in relaxation techniques and stress relief methods'),
+('Religion', 'Interest in religious beliefs and spiritual practices'),
+('Roleplay', 'Interest in role-playing games and imaginative scenarios'),
+('Running', 'Interest in running and jogging activities'),
+('Science', 'Interest in scientific exploration and discovery'),
+('Singing', 'Interest in vocal performance and singing'),
+('Socialising', 'Interest in social interactions and building relationships'),
+('Software', 'Interest in software development and computer programming'),
+('Spectating', 'Interest in spectating sports events and live performances'),
+('Sport', 'Interest in participating in various sports and physical activities'),
+('Strength', 'Interest in building physical strength and muscle mass'),
+('Tabletop Games', 'Interest in playing tabletop games and board games'),
+('Team', 'Interest in teamwork and collaborative efforts'),
+('Technical', 'Interest in technical skills and specialized knowledge'),
+('Technology', 'Interest in technological innovations and advancements'),
+('Training', 'Interest in training programs and skill development'),
+('Travel', 'Interest in traveling to new destinations and exploring different cultures'),
+('Videogames', 'Interest in playing video games and interactive digital entertainment'),
+('Visual', 'Interest in visual arts and aesthetics'),
+('Water Sport', 'Interest in water-based sports and aquatic activities');
+
 
 INSERT INTO users (email, password) VALUES 
 ('am4103@bath.ac.uk', 'password'),
@@ -199,6 +222,13 @@ INSERT INTO userSocieties (society_id, user_id, join_date, role) VALUES
 ('1', '1', CURRENT_DATE, 'member'),
 ('1', '2', CURRENT_DATE, 'commitee');
 
+INSERT INTO interestPredictions (name, user_id, predicted_interest)
+SELECT
+   societies.name,
+   users.user_id,
+   0 AS predicted_interest             
+FROM
+   societies, users;
 
 
 /*             select all users in a society, or every society a user is in
