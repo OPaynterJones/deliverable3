@@ -5,7 +5,7 @@ from flask_mysqldb import MySQL, MySQLdb
 from flask_cors import CORS
 import bcrypt
 import uuid
-from algorithm import train
+from algorithm import train, predict
 
 
 app = Flask(__name__)
@@ -76,17 +76,23 @@ def ping():
         # Try to connect to the database
         conn = mysql.connection
         cur = conn.cursor()
-
+        cur.execute("SHOW TABLES")
+        data = cur.fetchall()
         # If the connection is successful, close it and return a success message
         cur.close()
-        return jsonify({"message": "Database connection successful"}), 200
+        return jsonify({"message": "Database connection successful"}, {"tables": data}), 200
     except Exception as e:
         # If the connection fails, return an error message
         return jsonify({"message": f"Database connection failed: {str(e)}"}), 500
 
-@app.route('/train')
+@app.route('/predict')
 def train_algorithm():
-    return train()
+    user_id = request.get_json()["user_id"]
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT scale FROM userInterests WHERE user_id = %s", (user_id,))
+    interests = cur.fetchall()
+    cur.close()
+    return jsonify(interests)
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
@@ -267,4 +273,5 @@ def get_image(filename):
 
 
 if __name__ == "__main__":
+    train()
     app.run(debug=True)
