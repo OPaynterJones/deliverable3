@@ -204,10 +204,48 @@ INSERT INTO users (email, password) VALUES
 ('ye1235@test.com', 'password2');
 
 
-INSERT INTO events (event_name, description, location, event_time, image_filename) VALUES
-('Hockey', 'Description for Event 1', 'Location 1', '2024-03-10 14:00:00', 'hockey-society.png'),
-('Powerlifting', 'Description for Event 2', 'Location 2', '2024-03-11 15:00:00', 'powerlifting.png'),
-('Rowing', 'Description for Event 3', 'Location 3', '2024-03-12 16:00:00', 'rowing-society.png');
+INSERT INTO events (event_name, description, location, event_time, image_filename, society_id) VALUES
+('ABACUS Event', 'Description for ABACUS Event', 'Location for ABACUS', '2024-04-15 18:00:00', 'abacus-society.png', 1),
+('Badminton Event', 'Description for Badminton Event', 'Location for Badminton', '2024-04-16 19:00:00', 'badminton-society.png', 2),
+('Basketball Event', 'Description for Basketball Event', 'Location for Basketball', '2024-04-17 20:00:00', 'basketball-society.png', 3),
+('Bath City FC Event', 'Description for Bath City FC Event', 'Location for Bath City FC', '2024-04-18 21:00:00', 'bath-city-fc-society.png', 4),
+('Boxing Event', 'Description for Boxing Event', 'Location for Boxing', '2024-04-19 22:00:00', 'boxing-society.png', 5),
+('Computer Science Event', 'Description for Computer Science Event', 'Location for Computer Science', '2024-04-20 23:00:00', 'computer-science-society.png', 6),
+('Cricket Event', 'Description for Cricket Event', 'Location for Cricket', '2024-04-21 00:00:00', 'cricket-society.png', 7),
+('Cue Sports Event', 'Description for Cue Sports Event', 'Location for Cue Sports', '2024-04-22 01:00:00', 'cue-sports-society.png', 8),
+('Cycling Event', 'Description for Cycling Event', 'Location for Cycling', '2024-04-23 02:00:00', 'cycling-society.png', 9),
+('Dance Event', 'Description for Dance Event', 'Location for Dance', '2024-04-24 03:00:00', 'dance-society.png', 10),
+('Data Science Event', 'Description for Data Science Event', 'Location for Data Science', '2024-04-25 04:00:00', 'data-science-society.png', 11),
+('Debate Event', 'Description for Debate Event', 'Location for Debate', '2024-04-26 05:00:00', 'debate-society.png', 12),
+('Drum and Bass Event', 'Description for Drum and Bass Event', 'Location for Drum and Bass', '2024-04-27 06:00:00', 'drum-and-bass-society.png', 13),
+('Fashion Event', 'Description for Fashion Event', 'Location for Fashion', '2024-04-28 07:00:00', 'fashion-society.png', 14),
+('Finance Event', 'Description for Finance Event', 'Location for Finance', '2024-04-29 08:00:00', 'finance-society.png', 15),
+('Fine Art Event', 'Description for Fine Art Event', 'Location for Fine Art', '2024-04-30 09:00:00', 'fine-art-society.png', 16),
+('Gin Event', 'Description for Gin Event', 'Location for Gin', '2024-05-01 10:00:00', 'gin-society.png', 17),
+('Golf Event', 'Description for Golf Event', 'Location for Golf', '2024-05-02 11:00:00', 'golf-society.png', 18),
+('Green Party Event', 'Description for Green Party Event', 'Location for Green Party', '2024-05-03 12:00:00', 'green-party-society.png', 19),
+('Hockey Event', 'Description for Hockey Event', 'Location for Hockey', '2024-05-04 13:00:00', 'hockey-society.png', 20),
+('Jiu Jitsu Event', 'Description for Jiu Jitsu Event', 'Location for Jiu Jitsu', '2024-05-05 14:00:00', 'jiu-jitsu-society.png', 21),
+('Lacrosse Event', 'Description for Lacrosse Event', 'Location for Lacrosse', '2024-05-06 15:00:00', 'lacrosse-society.png', 22),
+('Left Union Event', 'Description for Left Union Event', 'Location for Left Union', '2024-05-07 16:00:00', 'left-union-society.png', 23),
+('Model UN Event', 'Description for Model UN Event', 'Location for Model UN', '2024-05-08 17:00:00', 'model-un-society.png', 24),
+('Music Event', 'Description for Music Event', 'Location for Music', '2024-05-09 18:00:00', 'music-society.png', 25),
+('Netball Event', 'Description for Netball Event', 'Location for Netball', '2024-05-10 19:00:00', 'netball-society.png', 26),
+('Poker Event', 'Description for Poker Event', 'Location for Poker', '2024-05-11 20:00:00', 'poker-society.png', 27),
+('Politics Event', 'Description for Politics Event', 'Location for Politics', '2024-05-12 21:00:00', 'politics-society.png', 28),
+('Powerlifting Event', 'Description for Powerlifting Event', 'Location for Powerlifting', '2024-05-13 22:00:00', 'powerlifting-society.png', 29),
+('Rowing Event', 'Description for Rowing Event', 'Location for Rowing', '2024-05-14 23:00:00', 'rowing-society.png', 30),
+('Rugby Union Event', 'Description for Rugby Union Event', 'Location for Rugby Union', '2024-05-15 00:00:00', 'rugby-union-society.png', 31),
+('Sailing Event', 'Description for Sailing Event', 'Location for Sailing', '2024-05-16 01:00:00', 'sailing-society.png', 32),
+('Salsa Event', 'Description for Salsa Event', 'Location for Salsa', '2024-05-17 02:00:00', 'salsa-society.png', 33),
+('Squash Event', 'Description for Squash Event', 'Location for Squash', '2024-05-18 03:00:00', 'squash-society.png', 34),
+('Student Theatre Event', 'Description for Student Theatre Event', 'Location for Student Theatre', '2024-05-19 04:00:00', 'student-theatre-society.png', 35),
+('Swimming Event', 'Description for Swimming Event', 'Location for Swimming', '2024-05-20 05:00:00', 'swimming-society.png', 36),
+('Table Tennis Event', 'Description for Table Tennis Event', 'Location for Table Tennis', '2024-05-21 06:00:00', 'table-tennis-society.png', 37),
+('Triathlon Event', 'Description for Triathlon Event', 'Location for Triathlon', '2024-05-22 07:00:00', 'triathlon-society.png', 38),
+('Urban Dance Event', 'Description for Urban Dance Event', 'Location for Urban Dance', '2024-05-23 08:00:00', 'urban-dance-society.png', 39),
+('Water Polo Event', 'Description for Water Polo Event', 'Location for Water Polo', '2024-05-24 09:00:00', 'water-polo-society.png', 40);
+
 
 
 INSERT INTO userInterests (user_id, interest, scale)

@@ -1,10 +1,10 @@
 import sys
-import time
 
 import numpy as np
 from flask import Flask, jsonify, request, make_response, send_from_directory
 from flask_mysqldb import MySQL, MySQLdb
 from flask_cors import CORS
+from datetime import datetime
 import bcrypt
 import uuid
 from algorithm import train, predict_interest
@@ -76,7 +76,6 @@ mysql = MySQL(app)
 def ping():
     try:
         # Try to connect to the database
-        conn = mysql.connection
         return jsonify({"message": "Database connection successful"}), 200
     except Exception as e:
         # If the connection fails, return an error message
@@ -107,10 +106,51 @@ def predict():
 
     return jsonify(predictions)
 
+@app.route("/suggest_event", methods=["GET"])
+def suggest_event():
+    request_data = request.json
+    user_id = request_data.get("user_id")
+
+    cur = mysql.connection.cursor()
+    today = datetime.now().date()
+    
+    # Top 5 predicted societies
+    cur.execute("SELECT name FROM interestPredictions WHERE user_id = %s ORDER BY predicted_interest DESC LIMIT 5", (user_id,))
+    predicted_societies = cur.fetchall()
+    
+    # Initialize an empty list to store suggested events
+    suggested_events = []
+    
+    # Loop through each of the top 5 predicted societies
+    for society in predicted_societies:
+        society_name = society[0]
+        
+        # Query to get the upcoming event related to the predicted society
+        cur.execute("""
+            SELECT e.event_id, e.event_name, e.event_time
+            FROM events e
+            JOIN societies s ON e.society_id = s.society_id
+            WHERE s.name = %s AND e.event_time >= %s
+            ORDER BY e.event_time ASC
+            LIMIT 1
+        """, (society_name, today))
+        
+        event = cur.fetchone()
+        if event:
+            suggested_events.append({
+                "event_id": event[0],
+                "event_name": event[1],
+                "event_time": event[2].strftime('%Y-%m-%d %H:%M:%S')
+            })
+    
+    cur.close()
+    
+    return jsonify(suggested_events)
+
 @app.route("/tables")
 def return_tables():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM interestPredictions WHERE user_id = 1")
+    cur.execute("SELECT * FROM eventsInterests")
     data = cur.fetchall()
     cur.close()
     
