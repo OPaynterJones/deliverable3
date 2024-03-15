@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
+import SocietyPage from "./pages/SocietyPage/SocietyPage";
 import "./global-styles.css";
 
 // ------------- STYLING -------------
@@ -72,10 +73,11 @@ const RequireAuth = () => {
 const App = () => (
   <BrowserRouter>
     <Routes>
+      <Route path="/" element={<Navigate to="/for-you" replace />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/society/:society_name" element={<SocietyPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/for-you" element={<ForYouPage />} />
-        {/* <Route path="*" element={<Navigate to="/for-you" replace />} /> */}
       </Route>
     </Routes>
     <BodyStyleManager />
