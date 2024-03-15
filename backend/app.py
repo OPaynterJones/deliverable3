@@ -320,7 +320,7 @@ def get_user_interests():
     return jsonify(fetch_data)
 
 # update user interest scores
-@app.route("/update_user_interests")
+@app.route("/update_user_interests", methods=["POST"])
 def set_user_interests():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
@@ -456,7 +456,7 @@ def get_event_interests():
     return jsonify(fetch_data)
 
 # update event interest scores
-@app.route("/update_event_interests")
+@app.route("/update_event_interests", methods=["POST"])
 def set_event_interests():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
