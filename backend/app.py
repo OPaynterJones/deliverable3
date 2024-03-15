@@ -1,11 +1,13 @@
 import sys
-import time
+
+import numpy as np
 from flask import Flask, jsonify, request, make_response, send_from_directory
 from flask_mysqldb import MySQL, MySQLdb
 from flask_cors import CORS
+from datetime import datetime
 import bcrypt
 import uuid
-from algorithm import train
+from algorithm import train, predict_interest
 
 
 app = Flask(__name__)
@@ -74,30 +76,97 @@ mysql = MySQL(app)
 def ping():
     try:
         # Try to connect to the database
-        conn = mysql.connection
-        cur = conn.cursor()
-
-        # If the connection is successful, close it and return a success message
-        cur.close()
         return jsonify({"message": "Database connection successful"}), 200
     except Exception as e:
         # If the connection fails, return an error message
         return jsonify({"message": f"Database connection failed: {str(e)}"}), 500
+    
+@app.route('/predict', methods=["GET"])
+def predict():
+    request_data = request.json
+    user_id = request_data.get("user_id")
 
-@app.route('/train')
-def train_algorithm():
-    return train()
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT scale FROM userInterests WHERE user_id = {user_id}")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+
+    interests_array = np.array([item[0] for item in fetch_data]).reshape(1, -1)
+    predictions = predict_interest(interests_array)
+
+    # Update predicted interests in interestPredictions table
+    cursor = mysql.connection.cursor()
+    for prediction in predictions:
+        society_name, predicted_interest = prediction
+        cursor.execute(
+            f"UPDATE interestPredictions SET predicted_interest = {predicted_interest} WHERE name = '{society_name}' AND user_id = {user_id}"
+        )
+    mysql.connection.commit()
+    cursor.close()
+
+    return jsonify(predictions)
+
+@app.route("/suggest_event", methods=["GET"])
+def suggest_event():
+    try:
+        request_data = request.json
+        user_id = request_data.get("user_id")
+        if not user_id:
+            return jsonify({"error": "user_id is required"}), 400
+        
+        cur = mysql.connection.cursor()
+        today = datetime.now().date()
+        
+        cur.execute("SELECT name FROM interestPredictions WHERE user_id = %s ORDER BY predicted_interest DESC", (user_id,))
+        predicted_societies = cur.fetchall()
+        suggested_events = []
+      
+
+        for society in predicted_societies:
+            society_name = society[0]
+            
+            # Query to get the upcoming event related to the predicted society
+            cur.execute("""
+                SELECT e.event_id, e.event_name, e.event_time
+                FROM events e
+                JOIN societies s ON e.society_id = s.society_id
+                WHERE s.name = %s AND e.event_time >= %s
+                ORDER BY e.event_time ASC
+                LIMIT 1
+            """, (society_name, today))
+            
+            event = cur.fetchone()
+            if event:
+                # If an event is found, append it to the suggested_events list and break the loop
+                suggested_events.append({
+                    "event_id": event[0],
+                    "event_name": event[1],
+                    "event_time": event[2].strftime('%Y-%m-%d %H:%M:%S')
+                })
+                break # Exit the loop as soon as an event is found
+        
+        cur.close()
+        
+        if not suggested_events:
+            return jsonify({"error": "No events found for the top predicted societies"}), 404
+        
+        return jsonify(suggested_events)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/tables")
+def return_tables():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM interestPredictions WHERE user_id = 1 ORDER BY predicted_interest")
+    data = cur.fetchall()
+    cur.close()
+    
+    return str(data)
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
-    user_id = request.args.get(
-        "user_id"
-    )  # need to change to request.form.get when real
-    if not user_id:
-        return "no user id"
-
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user_id,))
+    cur.execute("SELECT * FROM interests")
     data = cur.fetchall()
     cur.close()
     return jsonify(data)
@@ -267,4 +336,5 @@ def get_image(filename):
 
 
 if __name__ == "__main__":
+    train()
     app.run(debug=True)
