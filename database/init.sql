@@ -246,8 +246,6 @@ INSERT INTO events (event_name, description, location, event_time, image_filenam
 ('Urban Dance Event', 'Description for Urban Dance Event', 'Location for Urban Dance', '2024-05-23 08:00:00', 'urban-dance-society.png', 39),
 ('Water Polo Event', 'Description for Water Polo Event', 'Location for Water Polo', '2024-05-24 09:00:00', 'water-polo-society.png', 40);
 
-
-
 INSERT INTO userInterests (user_id, interest, scale)
 SELECT
    users.user_id,

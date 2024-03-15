@@ -108,49 +108,56 @@ def predict():
 
 @app.route("/suggest_event", methods=["GET"])
 def suggest_event():
-    request_data = request.json
-    user_id = request_data.get("user_id")
+    try:
+        request_data = request.json
+        user_id = request_data.get("user_id")
+        if not user_id:
+            return jsonify({"error": "user_id is required"}), 400
+        
+        cur = mysql.connection.cursor()
+        today = datetime.now().date()
+        
+        cur.execute("SELECT name FROM interestPredictions WHERE user_id = %s ORDER BY predicted_interest DESC", (user_id,))
+        predicted_societies = cur.fetchall()
+        suggested_events = []
+      
 
-    cur = mysql.connection.cursor()
-    today = datetime.now().date()
-    
-    # Top 5 predicted societies
-    cur.execute("SELECT name FROM interestPredictions WHERE user_id = %s ORDER BY predicted_interest DESC LIMIT 5", (user_id,))
-    predicted_societies = cur.fetchall()
-    
-    # Initialize an empty list to store suggested events
-    suggested_events = []
-    
-    # Loop through each of the top 5 predicted societies
-    for society in predicted_societies:
-        society_name = society[0]
+        for society in predicted_societies:
+            society_name = society[0]
+            
+            # Query to get the upcoming event related to the predicted society
+            cur.execute("""
+                SELECT e.event_id, e.event_name, e.event_time
+                FROM events e
+                JOIN societies s ON e.society_id = s.society_id
+                WHERE s.name = %s AND e.event_time >= %s
+                ORDER BY e.event_time ASC
+                LIMIT 1
+            """, (society_name, today))
+            
+            event = cur.fetchone()
+            if event:
+                # If an event is found, append it to the suggested_events list and break the loop
+                suggested_events.append({
+                    "event_id": event[0],
+                    "event_name": event[1],
+                    "event_time": event[2].strftime('%Y-%m-%d %H:%M:%S')
+                })
+                break # Exit the loop as soon as an event is found
         
-        # Query to get the upcoming event related to the predicted society
-        cur.execute("""
-            SELECT e.event_id, e.event_name, e.event_time
-            FROM events e
-            JOIN societies s ON e.society_id = s.society_id
-            WHERE s.name = %s AND e.event_time >= %s
-            ORDER BY e.event_time ASC
-            LIMIT 1
-        """, (society_name, today))
+        cur.close()
         
-        event = cur.fetchone()
-        if event:
-            suggested_events.append({
-                "event_id": event[0],
-                "event_name": event[1],
-                "event_time": event[2].strftime('%Y-%m-%d %H:%M:%S')
-            })
-    
-    cur.close()
-    
-    return jsonify(suggested_events)
+        if not suggested_events:
+            return jsonify({"error": "No events found for the top predicted societies"}), 404
+        
+        return jsonify(suggested_events)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/tables")
 def return_tables():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM eventsInterests")
+    cur.execute("SELECT * FROM interestPredictions WHERE user_id = 1 ORDER BY predicted_interest")
     data = cur.fetchall()
     cur.close()
     
