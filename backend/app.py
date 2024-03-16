@@ -23,22 +23,6 @@ app.config["MYSQL_DB"] = "deliverable3_testing_db"
 
 mysql = MySQL(app)
 
-
-# @app.route("/uinterests")  # its /uinterests?user_id=...
-# def return_userinterests():
-#     user_id = request.args.get(
-#         "user_id"
-#     )  # need to change to request.form.get when real
-#     if not user_id:
-#         return "no user id"
-
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user_id,))
-#     data = cur.fetchall()
-#     cur.close()
-#     return jsonify(data)
-
-
 # @app.route(
 #     "/set_uinterest", methods=["GET", "POST"]
 # )  # its /set_uinterest?user_id=...&interest=....&scale=...
@@ -80,8 +64,9 @@ def ping():
     except Exception as e:
         # If the connection fails, return an error message
         return jsonify({"message": f"Database connection failed: {str(e)}"}), 500
-    
-@app.route('/predict', methods=["GET"])
+
+
+@app.route("/predict", methods=["GET"])
 def predict():
     request_data = request.json
     user_id = request_data.get("user_id")
@@ -106,6 +91,7 @@ def predict():
 
     return jsonify(predictions)
 
+
 @app.route("/suggest_event", methods=["GET"])
 def suggest_event():
     try:
@@ -113,55 +99,69 @@ def suggest_event():
         user_id = request_data.get("user_id")
         if not user_id:
             return jsonify({"error": "user_id is required"}), 400
-        
+
         cur = mysql.connection.cursor()
         today = datetime.now().date()
-        
-        cur.execute("SELECT name FROM interestPredictions WHERE user_id = %s ORDER BY predicted_interest DESC", (user_id,))
+
+        cur.execute(
+            "SELECT name FROM interestPredictions WHERE user_id = %s ORDER BY predicted_interest DESC",
+            (user_id,),
+        )
         predicted_societies = cur.fetchall()
         suggested_events = []
-      
 
         for society in predicted_societies:
             society_name = society[0]
-            
+
             # Query to get the upcoming event related to the predicted society
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT e.event_id, e.event_name, e.event_time
                 FROM events e
                 JOIN societies s ON e.society_id = s.society_id
                 WHERE s.name = %s AND e.event_time >= %s
                 ORDER BY e.event_time ASC
                 LIMIT 1
-            """, (society_name, today))
-            
+            """,
+                (society_name, today),
+            )
+
             event = cur.fetchone()
             if event:
                 # If an event is found, append it to the suggested_events list and break the loop
-                suggested_events.append({
-                    "event_id": event[0],
-                    "event_name": event[1],
-                    "event_time": event[2].strftime('%Y-%m-%d %H:%M:%S')
-                })
-                break # Exit the loop as soon as an event is found
-        
+                suggested_events.append(
+                    {
+                        "event_id": event[0],
+                        "event_name": event[1],
+                        "event_time": event[2].strftime("%Y-%m-%d %H:%M:%S"),
+                    }
+                )
+                break  # Exit the loop as soon as an event is found
+
         cur.close()
-        
+
         if not suggested_events:
-            return jsonify({"error": "No events found for the top predicted societies"}), 404
-        
+            return (
+                jsonify({"error": "No events found for the top predicted societies"}),
+                404,
+            )
+
         return jsonify(suggested_events)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/tables")
 def return_tables():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM interestPredictions WHERE user_id = 1 ORDER BY predicted_interest")
+    cur.execute(
+        "SELECT * FROM interestPredictions WHERE user_id = 1 ORDER BY predicted_interest"
+    )
     data = cur.fetchall()
     cur.close()
-    
+
     return str(data)
+
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
@@ -306,6 +306,7 @@ def get_recommended_event():
 
         # Check if event is found
         if event:
+            app.logger.debug(event[5])
             # Prepare data with image path
             event_data = {
                 "id": event[0],
@@ -313,7 +314,7 @@ def get_recommended_event():
                 "description": event[2],
                 "location": event[3],
                 "time": event[4],
-                "image_url": f"http://localhost:5000/images/{event[5]}",  # Construct image URL
+                "image_url": event[5],  # Construct image URL
                 "society_id": event[6],
             }
             return jsonify(event_data), 200
@@ -322,6 +323,27 @@ def get_recommended_event():
 
     except Exception as e:
         return jsonify({"message": f"Error fetching events: {str(e)}"}), 500
+
+
+@app.route("/societies/<society_name>")
+def get_society_details(society_name):
+    app.logger.debug(society_name)
+    try:
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT * FROM societies WHERE name = %s", (society_name,))
+        society_data = cur.fetchone()
+
+        if society_data:
+            society_details = {
+                column[0]: value for column, value in zip(cur.description, society_data)
+            }
+            return jsonify(society_details), 200
+        else:
+            return jsonify({"message": f"Society '{society_name}' not found"}), 404
+
+    except Exception as e:
+        return jsonify({"message": f"Error fetching society details: {str(e)}"}), 500
 
 
 @app.route("/images/<filename>")

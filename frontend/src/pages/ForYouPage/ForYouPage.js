@@ -9,7 +9,6 @@ import {
 import NavBar from "../../Components/NavBar/NavBar";
 
 const darkenColor = (color, amount) => {
-  // Check for valid color format (rgb)
   if (!/^rgb\([0-9]{1,3}, [0-9]{1,3}, [0-9]{1,3}\)$/.test(color)) {
     return null;
   }
@@ -20,10 +19,9 @@ const darkenColor = (color, amount) => {
     .split(", ")
     .map((component) => parseInt(component, 10));
 
-  // Darken each color component by the specified amount
   const darkenedComponents = colorComponents.map((component) => {
     const adjustedComponent = component * (1 - amount);
-    return Math.max(0, Math.round(adjustedComponent)); // Clamp to 0-255
+    return Math.max(0, Math.round(adjustedComponent));
   });
 
   return `rgb(${darkenedComponents.join(", ")})`;
@@ -33,7 +31,7 @@ const useDominantColor = (imageUrl) => {
   const [dominantColor, setDominantColor] = useState(null);
 
   useEffect(() => {
-    if (!imageUrl) return;
+    if (!imageUrl) setDominantColor("rgb(26, 103, 148)");
 
     const img = new Image();
     img.crossOrigin = "Anonymous";
@@ -42,6 +40,9 @@ const useDominantColor = (imageUrl) => {
       const color = colorThief.getColor(img);
       const darkenedColor = darkenColor(`rgb(${color.join(", ")})`, 0.45);
       setDominantColor(darkenedColor);
+    };
+    img.onerror = () => {
+      setDominantColor("rgb(26, 103, 148)");
     };
     img.src = imageUrl;
   }, [imageUrl]);
