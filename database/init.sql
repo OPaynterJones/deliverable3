@@ -15,7 +15,7 @@ CREATE TABLE `events` (
     `event_time` DATETIME,
     `image_filename` VARCHAR(255),
     `society_id` BIGINT UNSIGNED,
-    FOREIGN KEY (`society_id`) REFERENCES `societies`(`society_id`)
+    FOREIGN KEY (`society_id`) REFERENCES `societies`(`id`)
 );
 
 CREATE TABLE `users` (
