@@ -43,3 +43,17 @@
   display: flex;
   justify-content: center;
 }
+
+.society-page-body {
+  position: relative;
+  background-image: linear-gradient(
+    85deg,
+    white 50%,
+    var(--primary-color) 55%,
+    var(--primary-color)
+  );
+  margin: 0;
+  padding: 0;
+  max-height: 100vh;
+  width: 100vw;
+}
