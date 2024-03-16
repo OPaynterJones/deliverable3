@@ -4,7 +4,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: 94vh;
-  background-color: var(--light-blue);
+  background-color: transparent;
 }
 
 .for-you-page::-webkit-scrollbar {
@@ -12,6 +12,7 @@
 }
 
 section {
+  background-color: transparent;
   position: relative;
   height: 94vh;
   scroll-snap-align: start;
@@ -166,12 +167,5 @@ section {
   --side-padding: 5rem;
   --intertext-padding: 1rem;
   flex: 1;
-  background-color: white;
-}
-
-.colour-columnL,
-.colour-columnR {
-flex: 0 0 15%;
-height: 100vh;
-background-color: var(--primary-color);
+  background-color: transparent;
 }

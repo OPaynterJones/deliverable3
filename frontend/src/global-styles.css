@@ -42,6 +42,14 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
+  background-image: linear-gradient(
+    90deg,
+    var(--light-blue),
+    var(--light-blue), 15%,
+    white 15%, 
+    white 80%,
+    var(--light-blue) 80%
+  );
 }
 
 .society-page-body {
