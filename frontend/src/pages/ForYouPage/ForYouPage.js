@@ -117,7 +117,19 @@ const ForYouPage = () => {
     <>
       <NavBar />
       <div className="for-you-page">
-        <section className="splash-page">{<p> some content </p>}</section>
+        <section className="splash-page">{
+          <div className='splashBox'>
+          <div className="colour-columnL"></div>
+          <div className='Main'>
+          <h2 className = 'splashTitle'>For You</h2>
+          <h2 className='splashInfoL'>Get involved!</h2>
+          <h2 className='splashInfoR'>Events from all corners of student life!</h2>
+          <h2 className='AuxL'>Tailored just for you</h2>
+          <h2 className='AuxR'>Reccomendations for students based on student data</h2>
+          </div>
+          <div className="colour-columnR"></div>
+      </div>
+        }</section>
         <section className="society-matchmaker">
           {eventData ? (
             <>

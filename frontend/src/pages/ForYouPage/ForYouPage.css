@@ -99,3 +99,79 @@ section {
   margin: 0;
   margin-left: 10%;
 }
+.splashTitle {
+  font-size: 5.0rem;
+  font-weight: 400;
+  text-align: left;
+  color: var(--text-primary);
+  margin: 1.1rem 0px 0.5rem 0px;
+  text-align: center;
+  margin-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.splashInfoL{
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-left: 2rem;
+  padding-bottom: 3rem;
+  padding-left: 3rem;
+}
+.AuxL {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-left: var(--side-padding);
+  padding: 3rem;
+}
+
+
+.AuxR {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-right: 9rem;
+  margin-left: auto;
+  padding-bottom: var(--intertext-padding);
+}
+
+.splashInfoR {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-right: var(--side-padding);
+  margin-left: auto;
+  padding-bottom: 3rem;
+}
+
+.splashBox{
+  padding-bottom: 5rem;
+  display: flex;
+}
+
+.Main{
+  --side-padding: 5rem;
+  --intertext-padding: 1rem;
+  flex: 1;
+  background-color: white;
+}
+
+.colour-columnL,
+.colour-columnR {
+flex: 0 0 15%;
+height: 100vh;
+background-color: var(--primary-color);
+}
