@@ -52,7 +52,7 @@ const useDominantColor = (imageUrl) => {
 
 const getRecommendedEvent = async () => {
   try {
-    const response = await fetch("http://localhost:5000/recommend_event", {
+    const response = await fetch("http://localhost:5000/demo", {
       credentials: "include",
     });
     if (!response.ok) {
@@ -119,18 +119,45 @@ const ForYouPage = () => {
       <div className="for-you-page">
         <section className="splash-page">
           {
-            <div className="splashBox">
-              <div className="Main">
-                <h2 className="splashTitle">For You</h2>
-                <h2 className="splashInfoL">Get involved!</h2>
-                <h2 className="splashInfoR">
-                  Events from all corners of student life!
-                </h2>
-                <h2 className="AuxL">Tailored just for you</h2>
-                <h2 className="AuxR">
-                  Reccomendations for students based on student data
-                </h2>
-              </div>
+            <div className="Main">
+              <h2 className="splashTitle">For You</h2>
+              <h2
+                className="splashInfo"
+                style={{
+                  left: "12vw",
+                  top: "17vh",
+                  fontSize: "2rem",
+                  fontWeight: "500",
+                }}
+              >
+                Get involved!
+              </h2>
+              <h2
+                className="splashInfo"
+                style={{
+                  right: "12vw",
+                  top: "32vh",
+                  fontSize: "1.5rem",
+                  textWrap: "break-word",
+                  width: "50vw",
+                }}
+              >
+                Our custom algorithm can help navigate all thats on offer at
+                university
+              </h2>
+              <h2
+                className="splashInfo"
+                style={{ left: "17vw", top: "55vh", fontSize: "1.2rem" }}
+              >
+                Like and Dislike events below and let the Society Matchmaker
+                guide you to your university community
+              </h2>
+              <h2
+                className="splashInfo"
+                style={{ top: "80vh", left: "45vw", fontSize: "0.9rem" }}
+              >
+                Continue below...
+              </h2>
             </div>
           }
         </section>
@@ -184,9 +211,9 @@ const ForYouPage = () => {
                   </div>
                 </div>
                 <div className="additional-information">
+                  <p>{eventData.society_id}</p>
                   <p>Time: {eventData.time}</p>
                   <p>Location: {eventData.location}</p>
-                  <p>{eventData.society_id}</p>
                 </div>
               </div>
             </>

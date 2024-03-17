@@ -29,6 +29,7 @@ def handle_non_json():
     return data
 """
 
+
 # get all data from table users by user_id
 @app.route("/user_data", methods=["GET"])
 def get_user_data():
@@ -37,7 +38,7 @@ def get_user_data():
     request_data = request.json
 
     user_id = request_data.get("id")
-    
+
     cursor = mysql.connection.cursor()
     cursor.execute(f"SELECT * FROM users WHERE user_id = {user_id}")
     fetch_data = cursor.fetchall()
@@ -46,6 +47,8 @@ def get_user_data():
 
 
 """ User Table """
+
+
 # get name from table users by user_id
 @app.route("/get_user_name", methods=["GET"])
 def get_user_name():
@@ -61,6 +64,7 @@ def get_user_name():
     cursor.close()
     return jsonify(fetch_data)
 
+
 # create new user set username, password, name to table users
 @app.route("/create_user", methods=["POST"])
 def set_user_data():
@@ -70,13 +74,16 @@ def set_user_data():
 
     username = request_data.get("username")
     password = request_data.get("password")
-    name     = request_data.get("name")
+    name = request_data.get("name")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"INSERT INTO users (username, password, name) VALUES ('{username}', '{password}', '{name}')")
+    cursor.execute(
+        f"INSERT INTO users (username, password, name) VALUES ('{username}', '{password}', '{name}')"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "User added successfully"})
+
 
 # set updated user password by user_id
 @app.route("/update_user_password", methods=["POST"])
@@ -85,14 +92,17 @@ def set_user_password():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id  = request_data.get("id")
+    user_id = request_data.get("id")
     password = request_data.get("password")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE users SET password = '{password}' WHERE user_id = {user_id}")
+    cursor.execute(
+        f"UPDATE users SET password = '{password}' WHERE user_id = {user_id}"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Password updated successfully"})
+
 
 # set updated user name by user_id
 @app.route("/update_user_name", methods=["POST"])
@@ -102,7 +112,7 @@ def set_user_name():
     request_data = request.json
 
     user_id = request_data.get("id")
-    name    = request_data.get("name")
+    name = request_data.get("name")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"UPDATE users SET name = '{name}' WHERE user_id = {user_id}")
@@ -112,6 +122,8 @@ def set_user_name():
 
 
 """ Societies Table """
+
+
 # get society name by society_id
 @app.route("/get_society_name", methods=["GET"])
 def get_society_name():
@@ -126,6 +138,7 @@ def get_society_name():
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 # create new society set name to table societies
 @app.route("/create_society", methods=["POST"])
@@ -142,6 +155,7 @@ def set_society_data():
     cursor.close()
     return jsonify({"message": "Society added successfully"})
 
+
 # update society name by society_id
 @app.route("/update_society_name", methods=["POST"])
 def set_society_name():
@@ -150,16 +164,20 @@ def set_society_name():
     request_data = request.json
 
     society_id = request_data.get("id")
-    name       = request_data.get("name")
+    name = request_data.get("name")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE societies SET name = '{name}' WHERE society_id = {society_id}")
+    cursor.execute(
+        f"UPDATE societies SET name = '{name}' WHERE society_id = {society_id}"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Name updated successfully"})
 
 
 """ Events Table """
+
+
 # get event name by event_id
 @app.route("/get_event_name", methods=["GET"])
 def get_event_name():
@@ -174,6 +192,7 @@ def get_event_name():
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 # get event data by event_id
 @app.route("/get_event_data", methods=["GET"])
@@ -190,6 +209,7 @@ def get_event_data():
     cursor.close()
     return jsonify(fetch_data)
 
+
 # get event by society_id
 @app.route("/get_society_events", methods=["GET"])
 def get_society_events():
@@ -205,6 +225,7 @@ def get_society_events():
     cursor.close()
     return jsonify(fetch_data)
 
+
 # create new event set society_id, name, datetime, location to table events
 @app.route("/create_event", methods=["POST"])
 def set_event_data():
@@ -213,14 +234,14 @@ def set_event_data():
     request_data = request.json
 
     society_id = request_data.get("society_id")
-    name       = request_data.get("name")
-    datetime   = request_data.get("datetime") # SQL DateTime format YYYY-MM-DD HH:MI:SS
-    location   = request_data.get("location")
+    name = request_data.get("name")
+    datetime = request_data.get("datetime")  # SQL DateTime format YYYY-MM-DD HH:MI:SS
+    location = request_data.get("location")
 
-    if name is "" or name is None:
+    if name == "" or name == None:
         name = "Default Social Name"
 
-    #default_datetime = "{today} 23:59:59".format(today=date.today()) # default datetime = end of day
+    # default_datetime = "{today} 23:59:59".format(today=date.today()) # default datetime = end of day
     default_datetime = "2024-12-01 10:00:00"
     # if no datetime given, must provide default value
     try:
@@ -231,14 +252,17 @@ def set_event_data():
 
     default_location = "The Plug & Tub"
     # if no location given, must provide default value
-    if location is "" or location is None:
+    if location == "" or location is None:
         location = default_location
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"INSERT INTO events (society_id, name, datetime, location) VALUES ({society_id}, '{name}', '{datetime}', '{location}')")
+    cursor.execute(
+        f"INSERT INTO events (society_id, name, datetime, location) VALUES ({society_id}, '{name}', '{datetime}', '{location}')"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Event added successfully"})
+
 
 # update event name by event_id
 @app.route("/update_event_name", methods=["POST"])
@@ -248,9 +272,9 @@ def set_event_name():
     request_data = request.json
 
     event_id = request_data.get("id")
-    name     = request_data.get("name")
+    name = request_data.get("name")
 
-    if name is "" or name is None:
+    if name == "" or name is None:
         return jsonify({"message": "Invalid Name input"})
 
     cursor = mysql.connection.cursor()
@@ -258,6 +282,7 @@ def set_event_name():
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Name updated successfully"})
+
 
 # update event datetime by event_id
 @app.route("/update_event_time", methods=["POST"])
@@ -267,7 +292,7 @@ def set_event_time():
     request_data = request.json
 
     event_id = request_data.get("id")
-    datetime = request_data.get("datetime") # SQL DateTime format YYYY-MM-DD HH:MI:SS
+    datetime = request_data.get("datetime")  # SQL DateTime format YYYY-MM-DD HH:MI:SS
 
     try:
         datetime.fromisoformat(datetime)
@@ -275,10 +300,13 @@ def set_event_time():
         return jsonify({"message": "Invalid DateTime input"})
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE events SET datetime = '{datetime}' WHERE event_id = {event_id}")
+    cursor.execute(
+        f"UPDATE events SET datetime = '{datetime}' WHERE event_id = {event_id}"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "DateTime updated successfully"})
+
 
 # update event location by event_id
 @app.route("/update_event_location", methods=["POST"])
@@ -290,17 +318,21 @@ def set_event_location():
     event_id = request_data.get("id")
     location = request_data.get("location")
 
-    if location is "" or location is None:
+    if location == "" or location is None:
         return jsonify({"message": "Invalid Location input"})
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE events SET location = '{location}' WHERE event_id = {event_id}")
+    cursor.execute(
+        f"UPDATE events SET location = '{location}' WHERE event_id = {event_id}"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Location updated successfully"})
 
 
 """ Interests Table """
+
+
 # get all interests
 @app.route("/get_interests", methods=["GET"])
 def get_interests():
@@ -312,6 +344,8 @@ def get_interests():
 
 
 """ User interest Table """
+
+
 # get user interest scores
 @app.route("/get_user_interests", methods=["GET"])
 def get_user_interests():
@@ -322,10 +356,13 @@ def get_user_interests():
     user_id = request_data.get("id")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"SELECT interest, scale FROM userInterests WHERE user_id = {user_id}")
+    cursor.execute(
+        f"SELECT interest, scale FROM userInterests WHERE user_id = {user_id}"
+    )
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 # update user interest scores
 @app.route("/update_user_interests", methods=["POST"])
@@ -334,18 +371,21 @@ def set_user_interests():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id         = request_data.get("id")
-    interest_scores = request_data.get("interest_scores") # json array of [[interest, scale]]
+    user_id = request_data.get("id")
+    interest_scores = request_data.get(
+        "interest_scores"
+    )  # json array of [[interest, scale]]
 
     """
     need to figure out how to break down the array of interest scores to update the db
     """
 
-
     return jsonify({"message": "Interests updated successfully"})
 
 
 """ User societies Table """
+
+
 # get societies user is a member of
 @app.route("/get_user_societies", methods=["GET"])
 def get_user_societies():
@@ -353,13 +393,14 @@ def get_user_societies():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id    = request_data.get("id")
+    user_id = request_data.get("id")
 
     cursor = mysql.connection.cursor()
     cursor.execute(f"SELECT society_id FROM userSocieties WHERE user_id = {user_id}")
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 # get user role by user_id and society_id
 @app.route("/get_user_society_role", methods=["GET"])
@@ -368,14 +409,17 @@ def get_user_society_role():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id    = request_data.get("user_id")
+    user_id = request_data.get("user_id")
     society_id = request_data.get("society_id")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"SELECT role FROM userSocieties WHERE user_id = {user_id} AND society_id = {society_id}")
+    cursor.execute(
+        f"SELECT role FROM userSocieties WHERE user_id = {user_id} AND society_id = {society_id}"
+    )
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 # add user to society by user_id and society_id
 @app.route("/add_user_society_member", methods=["POST"])
@@ -384,14 +428,17 @@ def set_user_society_member():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id    = request_data.get("user_id")
+    user_id = request_data.get("user_id")
     society_id = request_data.get("society_id")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"INSERT INTO userSocieties (society_id, user_id, role, join_date) VALUES ({society_id}, {user_id}, 'member', CURRENT_DATE)")
+    cursor.execute(
+        f"INSERT INTO userSocieties (society_id, user_id, role, join_date) VALUES ({society_id}, {user_id}, 'member', CURRENT_DATE)"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "User added to society successfully"})
+
 
 # set user role by user_id and society_id
 @app.route("/update_user_society_role", methods=["POST"])
@@ -400,18 +447,22 @@ def set_user_society_role():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id    = request_data.get("user_id")
+    user_id = request_data.get("user_id")
     society_id = request_data.get("society_id")
-    role       = request_data.get("role")
+    role = request_data.get("role")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE userSocieties SET role = '{role}' WHERE user_id = {user_id} AND society_id = {society_id}")
+    cursor.execute(
+        f"UPDATE userSocieties SET role = '{role}' WHERE user_id = {user_id} AND society_id = {society_id}"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Role updated successfully"})
 
 
 """ User events Table """
+
+
 # get event by user_id and event_id
 @app.route("/get_user_events", methods=["GET"])
 def get_user_events():
@@ -427,6 +478,7 @@ def get_user_events():
     cursor.close()
     return jsonify(fetch_data)
 
+
 # add user to event by user_id and event_id
 @app.route("/add_user_event_member", methods=["POST"])
 def set_user_event_member():
@@ -434,20 +486,24 @@ def set_user_event_member():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    user_id  = request_data.get("user_id")
+    user_id = request_data.get("user_id")
     event_id = request_data.get("event_id")
 
     cursor = mysql.connection.cursor()
     # !!!
     # WHY IS USER_EVENT PRIMARY_KEY = {user_id, event_id}!!! In userSocieties Primary_key = {society_id, user_id}
     # !!!
-    cursor.execute(f"INSERT INTO userEvents (user_id, event_id) VALUES ({user_id}, {event_id})")
+    cursor.execute(
+        f"INSERT INTO userEvents (user_id, event_id) VALUES ({user_id}, {event_id})"
+    )
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "User added to event successfully"})
 
 
 """ Events interest Table """
+
+
 # get event interest scores
 @app.route("/get_event_interests", methods=["GET"])
 def get_event_interests():
@@ -458,10 +514,13 @@ def get_event_interests():
     event_id = request_data.get("id")
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"SELECT interest, scale FROM eventInterests WHERE event_id = {event_id}")
+    cursor.execute(
+        f"SELECT interest, scale FROM eventInterests WHERE event_id = {event_id}"
+    )
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 # update event interest scores
 @app.route("/update_event_interests", methods=["POST"])
@@ -470,26 +529,30 @@ def set_event_interests():
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
-    event_id        = request_data.get("id")
-    interest_scores = request_data.get("interest_scores") # json array of [[interest, scale]]
+    event_id = request_data.get("id")
+    interest_scores = request_data.get(
+        "interest_scores"
+    )  # json array of [[interest, scale]]
 
     """
     need to figure out how to break down the array of interest scores to update the db
     """
-
 
     return jsonify({"message": "Interests updated successfully"})
 
 
 @app.route("/uinterests")  # its /uinterests?user_id=...
 def return_userinterests():
-    user_id = request.args.get("user_id")  # need to change to request.form.get when real
+    user_id = request.args.get(
+        "user_id"
+    )  # need to change to request.form.get when real
     if not user_id:
         return "no user id"
 
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user_id,))
-    
+
+
 # @app.route(
 #     "/set_uinterest", methods=["GET", "POST"]
 # )  # its /set_uinterest?user_id=...&interest=....&scale=...
@@ -562,10 +625,11 @@ def predict():
 @app.route("/suggest_event", methods=["GET"])
 def suggest_event():
     try:
-        request_data = request.json
-        user_id = request_data.get("user_id")
-        if not user_id:
-            return jsonify({"error": "user_id is required"}), 400
+        session_token = request.cookies.get("session_token")
+        if not session_token or not validate_session_token(session_token):
+            return jsonify({"error": "not authorized"}), 401
+
+        user_id = get_user_id(session_token)
 
         cur = mysql.connection.cursor()
         today = datetime.now().date()
@@ -575,8 +639,7 @@ def suggest_event():
             (user_id,),
         )
         predicted_societies = cur.fetchall()
-        suggested_events = []
-
+        app.logger.debug(predicted_societies)
         for society in predicted_societies:
             society_name = society[0]
 
@@ -596,26 +659,39 @@ def suggest_event():
             event = cur.fetchone()
             if event:
                 # If an event is found, append it to the suggested_events list and break the loop
-                suggested_events.append(
-                    {
-                        "event_id": event[0],
-                        "event_name": event[1],
-                        "event_time": event[2].strftime("%Y-%m-%d %H:%M:%S"),
-                    }
-                )
-                break  # Exit the loop as soon as an event is found
+                event_data = {
+                    "id": event[0],
+                    "title": event[1],
+                    "description": event[2],
+                    "location": event[3],
+                    "time": event[4],
+                    "image_url": event[5],  # Construct image URL
+                    "society_id": event[6],
+                }
+                cur.close()
+                return jsonify(event), 200  # Exit the loop as soon as an event is found
 
-        cur.close()
+        return (
+            jsonify({"error": "No events found for the top predicted societies"}),
+            404,
+        )
 
-        if not suggested_events:
-            return (
-                jsonify({"error": "No events found for the top predicted societies"}),
-                404,
-            )
-
-        return jsonify(suggested_events)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+def get_user_id(session_token):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT user_id FROM sessions WHERE session_token = %s", (session_token,)
+    )
+
+    # Fetch the result (should be a single row)
+    result = cur.fetchone()
+
+    if result:
+        return result
+    return None
 
 
 @app.route("/tables")
@@ -628,16 +704,6 @@ def return_tables():
     cur.close()
 
     return str(data)
-
-
-@app.route("/uinterests")  # its /uinterests?user_id=...
-def return_userinterests():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM interests")
-
-    data = cur.fetchall()
-    cur.close()
-    return jsonify(data)
 
 
 @app.route(
@@ -748,17 +814,23 @@ def check_session():
     if not session_token:
         return jsonify({"message": "No session token found"}), 401
 
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM sessions WHERE session_token = %s", (session_token,))
-    session_dbrecord = cur.fetchone()
-    cur.close()
-
-    if session_dbrecord:
+    if validate_session_token(session_token):
         app.logger.debug("User is logged in")
         return jsonify({"message": "User is logged in"}), 200
     else:
         app.logger.debug("Invalid session token")
         return jsonify({"message": "Invalid session token"}), 401
+
+
+def validate_session_token(token):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM sessions WHERE session_token = %s", (token,))
+    session_dbrecord = cur.fetchone()
+    cur.close()
+
+    if session_dbrecord:
+        return True
+    return False
 
 
 @app.route("/recommend_event")
@@ -825,6 +897,38 @@ def get_image(filename):
         return jsonify({"message": "An error occurred"}), 500
 
 
+@app.route("/demo")
+def demo():
+    def get_next_event():
+        events = [
+            {
+                "title": "Indoor Football Turn up and play",
+                "description": 'Calling all football fans! Join a casual indoor football match at Founders Hall on Monday, March 18th from 3pm to 5pm. This is a "turn up and play" event, so no need to register beforehand. Just show up, grab some friends (or play with others there), and get ready for some fun on the pitch. All skill levels are welcome!',
+                "location": "Founders Hall",
+                "time": "2024-03-18 15:00:00",
+                "image_url": "http://localhost:5000/images/football-event-1.png",  # Construct image URL
+                "society_id": "Association Football & Futsal",
+            },
+            {
+                "title": "Indoor Football Turn up and play",
+                "description": 'Calling all football fans! Join a casual indoor football match at Founders Hall on Monday, March 18th from 3pm to 5pm. This is a "turn up and play" event, so no need to register beforehand. Just show up, grab some friends (or play with others there), and get ready for some fun on the pitch. All skill levels are welcome!',
+                "location": "Founders Hall",
+                "time": "2024-03-18 15:00:00",
+                "image_url": "http://localhost:5000/images/football-event-1.png",  # Construct image URL
+                "society_id": "Association Football & Futsal",
+            },
+        ]
+
+        while True:
+            for event in events:
+                yield event
+
+    event = get_next_event()
+    app.logger.debug(event)
+    return jsonify(event), 200
+
+
 if __name__ == "__main__":
-    train()
     app.run(debug=True)
+    if result := train():
+        app.logger.debug(result)

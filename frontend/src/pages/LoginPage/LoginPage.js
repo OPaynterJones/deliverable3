@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import "./LoginPage.css";
@@ -10,6 +9,7 @@ const LoginPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isCreateAccount, setIsCreateAccount] = useState(false);
   const [isAuthenticated, setAuthenticated] = useState(null);
+  const [isSuccessMessage, setIsSuccessMessage] = useState(false);
 
   // check if user is logged in when login page mounts
 
@@ -67,6 +67,8 @@ const LoginPage = () => {
 
       if (isCreateAccount) {
         console.log("Register successful");
+        setIsSuccessMessage(true);
+
         // TODO display new message
       } else {
         console.log("Login successful");
@@ -101,6 +103,7 @@ const LoginPage = () => {
           <InputField
             className="confirm-password-field"
             type="password"
+            doc
             fieldToAskFor="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -110,7 +113,10 @@ const LoginPage = () => {
           <button
             type="button"
             className="create-account-button"
-            onClick={() => setIsCreateAccount(!isCreateAccount)}
+            onClick={() => {
+              setIsSuccessMessage(false);
+              setIsCreateAccount(!isCreateAccount);
+            }}
           >
             {isCreateAccount ? "Back to Login" : "Create New Account"}
           </button>
@@ -125,6 +131,9 @@ const LoginPage = () => {
             </span>
           </button>
         </div>
+        {isSuccessMessage && (
+          <p className="success-message">Account created successfully!</p>
+        )}
       </form>
     </div>
   );
