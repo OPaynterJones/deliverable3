@@ -1,0 +1,171 @@
+.for-you-page {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  height: 94vh;
+  background-color: transparent;
+}
+
+.for-you-page::-webkit-scrollbar {
+  display: none;
+}
+
+section {
+  background-color: transparent;
+  position: relative;
+  height: 94vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.splash-page {
+  width: 100vw;
+}
+
+.society-matchmaker {
+  display: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 1s ease;
+  color: var(--dark-blue);
+}
+
+.event-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px;
+  box-sizing: border-box;
+  width: 60vw;
+  height: 80vh;
+}
+
+.event-card {
+  height: 100%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: transform 0.6s ease-in-out, color 2s ease;
+  color: white;
+  box-sizing: border-box;
+}
+
+.event-title {
+  font-size: 1.2rem;
+  margin-top: 0.75vh;
+  margin: 1vh;
+  font-weight: bold;
+  z-index: 2;
+  text-align: center;
+}
+
+.event-image {
+  transition: opacity 0.6s ease;
+  height: 45%;
+  width: 100%;
+  overflow: hidden;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  background-position: center;
+  flex-grow: 0;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: color 0.6s ease;
+}
+
+.event-description {
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  height: 34%;
+}
+
+.additional-information {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  margin-left: 10%;
+}
+.splashTitle {
+  font-size: 5.0rem;
+  font-weight: 400;
+  text-align: left;
+  color: var(--text-primary);
+  margin: 1.1rem 0px 0.5rem 0px;
+  text-align: center;
+  margin-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.splashInfoL{
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-left: 2rem;
+  padding-bottom: 3rem;
+  padding-left: 3rem;
+}
+.AuxL {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-left: var(--side-padding);
+  padding: 3rem;
+}
+
+
+.AuxR {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-right: 9rem;
+  margin-left: auto;
+  padding-bottom: var(--intertext-padding);
+}
+
+.splashInfoR {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0.2rem 0px 0.2rem 0px;
+  max-width: 15rem;
+  text-align: center;
+  margin-right: var(--side-padding);
+  margin-left: auto;
+  padding-bottom: 3rem;
+}
+
+.splashBox{
+  padding-bottom: 5rem;
+  display: flex;
+}
+
+.Main{
+  --side-padding: 5rem;
+  --intertext-padding: 1rem;
+  flex: 1;
+  background-color: transparent;
+}

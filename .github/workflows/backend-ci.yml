@@ -1,0 +1,43 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Docker dev images
+      run: docker compose build
+      
+    - name: Start Docker dev images
+      run: docker compose up -d
+
+    - name: Wait for database
+      run: |
+        for i in {1..10}; do
+          if docker exec db mysql -uroot -e 'SELECT 1' > /dev/null 2>&1; then
+            echo "Database is ready"
+            sleep 10
+            break
+          else
+            echo "Waiting for database..."
+            sleep 5
+          fi
+        done
+
+    - name: Run backend tests
+      run: docker exec backend pytest -s tests/

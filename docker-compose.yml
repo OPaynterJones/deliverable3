@@ -1,8 +1,11 @@
+name: deliverable3-dev
 services: 
   frontend:
+    container_name: frontend
     image: morsultra/deliverable3:frontend
     build:
       context: ./frontend
+      dockerfile: dockerfile.dev
     ports: 
       - "3000:3000"
     volumes:
@@ -14,9 +17,11 @@ services:
       - db
 
   backend: 
+    container_name: backend
     image: morsultra/deliverable3:backend
     build: 
       context: ./backend
+      dockerfile: dockerfile.dev
     ports:
       - "5000:5000"
     volumes: 
@@ -25,9 +30,9 @@ services:
       FLASK_DEBUG: 1
     depends_on: 
       - db
-  db: 
+  db:
+    container_name: db
     image: mysql:8.3
-    restart: always
     environment: 
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
       MYSQL_DATABASE: deliverable3_testing_db

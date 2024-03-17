@@ -1,3 +1,4 @@
 nodemodules
 .dockerignore
 Dockerfile
+Dockerfile-prod

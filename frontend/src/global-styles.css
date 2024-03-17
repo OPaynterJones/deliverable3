@@ -1,7 +1,4 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
   font-size: 24px;
   font-weight: 400;
   font-family: "Google Sans", "Noto Sans Myanmar UI", Arial, sans-serif;
@@ -9,6 +6,7 @@
 
 :root {
   --dark-blue: #073854;
+  --light-blue: #b8dff5;
   --semi-dark-blue: #1a6794;
   --dark-blue-hover: #073854;
 
@@ -20,15 +18,50 @@
 }
 
 .login-page-body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   min-height: 100vh;
   background-image: linear-gradient(
-      45deg,
-      var(--primary-color) 25%,
-      transparent 25%,
-      transparent 75%,
-      var(--primary-color) 75%,
-      var(--primary-color)
-    )
+    45deg,
+    var(--primary-color) 25%,
+    transparent 25%,
+    transparent 75%,
+    var(--primary-color) 75%,
+    var(--primary-color)
+  );
+}
+
+.for-you-page-body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  background-image: linear-gradient(
+    90deg,
+    var(--light-blue),
+    var(--light-blue), 15%,
+    white 15%, 
+    white 80%,
+    var(--light-blue) 80%
+  );
+}
+
+.society-page-body {
+  position: relative;
+  background-image: linear-gradient(
+    85deg,
+    white 50%,
+    var(--primary-color) 55%,
+    var(--primary-color)
+  );
+  margin: 0;
+  padding: 0;
+  max-height: 100vh;
+  width: 100vw;
 }
