@@ -52,7 +52,7 @@ const useDominantColor = (imageUrl) => {
 
 const getRecommendedEvent = async () => {
   try {
-    const response = await fetch("http://localhost:5000/recommend_event", {
+    const response = await fetch("http://localhost:5000/suggest_event", {
       credentials: "include",
     });
     if (!response.ok) {
