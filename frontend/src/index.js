@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
 import "./global-styles.css";
+import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChooseYourInterestsPage.js";
 
 // ------------- STYLING -------------
 function BodyStyleManager() {
@@ -75,12 +76,13 @@ const RequireAuth = () => {
 const App = () => (
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Navigate to="/for-you" replace />} />
+      <Route path="/chose-your-interests" element={<ChooseYourInterestsPage />} />
+      {/* <Route path="/" element={<Navigate to="/for-you" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/society/:society_name" element={<SocietyPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/for-you" element={<ForYouPage />} />
-      </Route>
+      </Route> */}
     </Routes>
     <BodyStyleManager />
   </BrowserRouter>

@@ -45,8 +45,9 @@
   background-image: linear-gradient(
     90deg,
     var(--light-blue),
-    var(--light-blue), 15%,
-    white 15%, 
+    var(--light-blue),
+    15%,
+    white 15%,
     white 80%,
     var(--light-blue) 80%
   );
@@ -63,5 +64,10 @@
   margin: 0;
   padding: 0;
   max-height: 100vh;
+  width: 100vw;
+}
+
+.chose-your-interests-page-body {
+  height: 100vh;
   width: 100vw;
 }
