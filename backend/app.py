@@ -365,21 +365,29 @@ def get_user_interests():
 
 
 # update user interest scores
+# update all interests for a given user id
 @app.route("/update_user_interests", methods=["POST"])
-def set_user_interests():
+def update_user_interests():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
 
     user_id = request_data.get("id")
-    interest_scores = request_data.get(
-        "interest_scores"
-    )  # json array of [[interest, scale]]
+    interests = request_data.get("interests")
 
-    """
-    need to figure out how to break down the array of interest scores to update the db
-    """
+    if not interests:
+        return jsonify({"message": "No interests provided"})
 
+    cursor = mysql.connection.cursor()
+    # Delete existing interests for the user
+    cursor.execute(f"DELETE FROM user_interests WHERE user_id = {user_id}")
+    # Insert new interests
+    for interest in interests:
+        cursor.execute(
+            f"INSERT INTO user_interests (user_id, interest_id) VALUES ({user_id}, {interest})"
+        )
+    mysql.connection.commit()
+    cursor.close()
     return jsonify({"message": "Interests updated successfully"})
 
 

@@ -149,6 +149,82 @@ def test_login_and_session_authorization():
     # Check the response data
     assert check_session_response.json() == {"message": "User is logged in"}
 
+def test_update_society_name():
+    # Assuming society_id exists in the database
+    update_data = {"id": 1, "name": "New Society Name"}
+
+    # Send a POST request to update society name
+    response = requests.post(f"{BASE_URL}/update_society_name", json=update_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response message
+    assert response.json() == {"message": "Name updated successfully"}
+
+def test_update_event_with_empty_name_or_location():
+    # Assuming event_id exists in the database
+    event_id = 1
+    update_data_name_empty = {"id": event_id, "name": ""}
+    update_data_location_empty = {"id": event_id, "location": ""}
+
+    # Send a POST request to update event name with an empty string
+    response_name_empty = requests.post(f"{BASE_URL}/update_event_name", json=update_data_name_empty)
+
+    # Check that the response status code is 200 (OK)
+    assert response_name_empty.status_code == 200
+
+    # Check the response message for name update
+    assert response_name_empty.json() == {"message": "Invalid Name input"}
+
+    # Send a POST request to update event location with an empty string
+    response_location_empty = requests.post(f"{BASE_URL}/update_event_location", json=update_data_location_empty)
+
+    # Check that the response status code is 200 (OK)
+    assert response_location_empty.status_code == 200
+
+    # Check the response message for location update
+    assert response_location_empty.json() == {"message": "Invalid Location input"}
+
+def test_update_event_location_and_time_not_empty():
+    # Assuming event_id exists in the database
+    event_id = 1
+    update_data_location_not_empty = {"id": event_id, "location": "New Location"}
+    update_data_time_not_empty = {"id": event_id, "datetime": "2024-12-01 11:00:00"}
+
+    # Send a POST request to update event location with a non-empty string
+    response_location_not_empty = requests.post(f"{BASE_URL}/update_event_location", json=update_data_location_not_empty)
+
+    # Check that the response status code is 200 (OK)
+    assert response_location_not_empty.status_code == 200
+
+    # Check the response message for location update
+    assert response_location_not_empty.json() == {"message": "Location updated successfully"}
+
+    # Send a POST request to update event time with a non-empty string
+    response_time_not_empty = requests.post(f"{BASE_URL}/update_event_time", json=update_data_time_not_empty)
+
+    # Check that the response status code is 200 (OK)
+    assert response_time_not_empty.status_code == 200
+
+    # Check the response message for time update
+    assert response_time_not_empty.json() == {"message": "DateTime updated successfully"}
+
+def test_update_user_interests():
+    # Assuming user_id exists in the database
+    user_id = 1
+    interests = [1, 2, 3]  # Assuming interest IDs exist in the database
+
+    update_data = {"id": user_id, "interests": interests}
+
+    # Send a POST request to update user interests
+    response = requests.post(f"{BASE_URL}/update_user_interests", json=update_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response message
+    assert response.json() == {"message": "Interests updated successfully"}
 
 def test_get_image():
     # Test image filename
