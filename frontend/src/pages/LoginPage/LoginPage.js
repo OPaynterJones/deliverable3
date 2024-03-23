@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import InputField from "../../Components/AnimtedInputField/InputField";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const [isAuthenticated, setAuthenticated] = useState(null);
+  const [isCreateAccount, setIsCreateAccount] = useState(false);
+  const [isCommitteeMember, setIsCommitteeMember] = useState(false);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isCreateAccount, setIsCreateAccount] = useState(false);
-  const [isAuthenticated, setAuthenticated] = useState(null);
-  const [isSuccessMessage, setIsSuccessMessage] = useState(false);
 
-  // check if user is logged in when login page mounts
+  const [statusMessage, setStatusMessage] = useState(null);
 
+  const [societies, setSocieties] = useState([]);
+
+  // check if user is logged in when page is mounted
   useEffect(() => {
     const checkAuth = async () => {
       console.log("authenticating user");
@@ -20,7 +25,6 @@ const LoginPage = () => {
         const response = await fetch("http://localhost:5000/check_session", {
           method: "GET",
           credentials: "include",
-          mode: "cors",
         });
 
         if (!response.ok) {
@@ -39,13 +43,22 @@ const LoginPage = () => {
     checkAuth();
   }, []);
 
-  if (isAuthenticated) {
-    return <Navigate to="/for-you" replace />;
-  }
+  // redirect if authentication status changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/for-you", { replace: "true" });
+    }
+  }, [isAuthenticated, navigate]);
 
+  // Make request to backend with data
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      let dataToSend = { email, password };
+      const selector = document.querySelector(".society-dropdown");
+      if (isCommitteeMember && selector) {
+        dataToSend.affiliatedSociety = selector.value;
+      }
       const response = await fetch(
         isCreateAccount
           ? "http://localhost:5000/register"
@@ -55,29 +68,45 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }), // TODO can clean up now this is done, using auth header
+          body: JSON.stringify(dataToSend), // TODO can clean up now this is done, using auth header
           credentials: "include",
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+      const data = await response.json();
+      setStatusMessage(data.message);
 
-      if (isCreateAccount) {
-        console.log("Register successful");
-        setIsSuccessMessage(true);
-
-        // TODO display new message
-      } else {
-        console.log("Login successful");
-        window.location.reload();
+      if (!isCreateAccount && response.ok) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error) {
       console.error(error.message);
     }
   };
+
+  // get available socities
+  useEffect(() => {
+    const fetchSocieties = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/societies", {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch societies");
+        }
+        const data = await response.json();
+        setSocieties(data.society_names);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    if (isCommitteeMember) {
+      fetchSocieties();
+    }
+  }, [isCommitteeMember]);
 
   return (
     <div
@@ -109,31 +138,60 @@ const LoginPage = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         )}
-        <div className="button-container">
-          <button
-            type="button"
-            className="create-account-button"
-            onClick={() => {
-              setIsSuccessMessage(false);
-              setIsCreateAccount(!isCreateAccount);
-            }}
-          >
-            {isCreateAccount ? "Back to Login" : "Create New Account"}
-          </button>
-          <button
-            type="submit"
-            className="login-create-button"
-            style={{ width: isCreateAccount ? "10rem" : "6rem" }}
-          >
-            <span style={{ opacity: isCreateAccount ? 0 : 1 }}>Login</span>
-            <span style={{ opacity: isCreateAccount ? 1 : 0 }}>
-              Create Account
-            </span>
-          </button>
+        <div className="additional-login-info">
+          <div className="button-container">
+            <button
+              type="button"
+              className="create-account-button"
+              onClick={() => {
+                setStatusMessage(null);
+                setIsCreateAccount(!isCreateAccount);
+              }}
+            >
+              {isCreateAccount ? "Back to Login" : "Create New Account"}
+            </button>
+            <button
+              type="submit"
+              className="login-create-button"
+              style={{ width: isCreateAccount ? "10rem" : "6rem" }}
+            >
+              <span style={{ opacity: isCreateAccount ? 0 : 1 }}>Login</span>
+              <span style={{ opacity: isCreateAccount ? 1 : 0 }}>
+                Create Account
+              </span>
+            </button>
+          </div>
+          {isCreateAccount && (
+            <>
+              <div className="committee-member-checkbox">
+                <label htmlFor="committee-member">I'm a committee member</label>
+                <input
+                  type="checkbox"
+                  id="committee-member"
+                  value={isCommitteeMember}
+                  onChange={(e) => setIsCommitteeMember(e.target.checked)}
+                />
+              </div>
+              {isCommitteeMember && (
+                <select className="society-dropdown">
+                  <option value="" disabled>
+                    Select Society
+                  </option>
+                  {societies.map((societyName) => (
+                    <option
+                      key={societyName}
+                      value={societyName}
+                      className="dropdown-option"
+                    >
+                      {societyName}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </>
+          )}
+          {statusMessage && <p className="success-message">{statusMessage}</p>}
         </div>
-        {isSuccessMessage && (
-          <p className="success-message">Account created successfully!</p>
-        )}
       </form>
     </div>
   );
