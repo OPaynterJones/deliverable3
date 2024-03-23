@@ -51,7 +51,6 @@ CREATE TABLE `eventsInterests` (
 CREATE TABLE `userSocieties` (
     `society_id` BIGINT UNSIGNED NOT NULL,
     `user_id` BIGINT UNSIGNED NOT NULL,
-    `join_date` DATE NOT NULL,
     `role` ENUM('commitee', 'member') NOT NULL,
     PRIMARY KEY (`society_id`, `user_id`),
     FOREIGN KEY (`society_id`) REFERENCES `societies`(`society_id`),
@@ -253,10 +252,6 @@ SELECT
    (FLOOR((RAND() * 10))) AS scale             
 FROM
    users, interests;
-
-INSERT INTO userSocieties (society_id, user_id, join_date, role) VALUES
-('1', '1', CURRENT_DATE, 'member'),
-('1', '2', CURRENT_DATE, 'commitee');
 
 INSERT INTO interestPredictions (name, user_id, predicted_interest)
 SELECT
