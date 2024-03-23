@@ -66,23 +66,46 @@ def get_user_name():
 
 
 # create new user set username, password, name to table users
+import random
 @app.route("/create_user", methods=["POST"])
 def set_user_data():
     if not request.is_json:
-        return jsonify({"message": "Content type not supported (Not json)"})
-    request_data = request.json
+        return jsonify({"message": "Content type not supported (Not json)"}), 400
 
+    request_data = request.json
     username = request_data.get("username")
     password = request_data.get("password")
     name = request_data.get("name")
 
-    cursor = mysql.connection.cursor()
-    cursor.execute(
-        f"INSERT INTO users (username, password, name) VALUES ('{username}', '{password}', '{name}')"
-    )
-    mysql.connection.commit()
-    cursor.close()
-    return jsonify({"message": "User added successfully"})
+    if not username or not password or not name:
+        return jsonify({"message": "Username, password, and name are required fields"}), 400
+
+    try:
+        cursor = mysql.connection.cursor()
+
+        # Insert user into users table
+        cursor.execute("INSERT INTO users (username, password, name) VALUES (%s, %s, %s)",
+                       (username, password, name))
+        
+        # Fetch all interests from the interests table
+        cursor.execute("SELECT interest FROM interests")
+        interests = cursor.fetchall()
+        
+        # Assign a random interest scale for each interest
+        for interest in interests:
+            scale = random.choice([3, 8])  # Randomly choose between 3 and 8
+            cursor.execute(
+                "INSERT INTO userInterests (user_id, interest, scale) VALUES (LAST_INSERT_ID(), %s, %s)",
+                (interest[0], scale)
+            )
+
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({"message": "User added successfully"}), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred while processing the request",
+                        "error": str(e)}), 500
+
 
 
 # set updated user password by user_id
@@ -365,31 +388,38 @@ def get_user_interests():
 
 
 # update user interest scores
-# update all interests for a given user id
 @app.route("/update_user_interests", methods=["POST"])
 def update_user_interests():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
+    
+    session_token = request.cookies.get("session_token")
+    if not session_token or not validate_session_token(session_token):
+        return jsonify({"error": "not authorized"}), 401
+
+    user_id = get_user_id(session_token)
     request_data = request.json
-
-    user_id = request_data.get("id")
-    interests = request_data.get("interests")
-
-    if not interests:
-        return jsonify({"message": "No interests provided"})
-
-    cursor = mysql.connection.cursor()
-    # Delete existing interests for the user
-    cursor.execute(f"DELETE FROM user_interests WHERE user_id = {user_id}")
-    # Insert new interests
-    for interest in interests:
+    interests = request_data.get("interests")  # List of interests picked by the user
+    
+    if user_id is None or interests is None:
+        return jsonify({"message": "Missing user_id or interests data"})
+    
+    try:
+        cursor = mysql.connection.cursor()
+        # Update interests that were picked with a scale of 8
+        for interest in interests:
+            cursor.execute(
+                f"REPLACE INTO userInterests (user_id, interest, scale) VALUES ({user_id}, '{interest}', 8)"
+            )
+        # Update interests that were not picked with a scale of 3
         cursor.execute(
-            f"INSERT INTO user_interests (user_id, interest_id) VALUES ({user_id}, {interest})"
+            f"INSERT INTO userInterests (user_id, interest, scale) SELECT {user_id}, interest, 3 FROM interests WHERE interest NOT IN {tuple(interests)}"
         )
-    mysql.connection.commit()
-    cursor.close()
-    return jsonify({"message": "Interests updated successfully"})
-
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({"message": "User interests updated successfully"})
+    except Exception as e:
+        return jsonify({"message": f"Error: {str(e)}"})
 
 """ User societies Table """
 
