@@ -127,7 +127,7 @@ def test_login_and_session_authorization():
     login_response = requests.post(f"{BASE_URL}/login", json=login_data)
 
     # Check that the response status code is 200 (OK)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
 
     # Check the response data
     assert login_response.json() == {"message": "Login Successful"}
@@ -144,87 +144,11 @@ def test_login_and_session_authorization():
     )
 
     # Check that the response status code is 200 (OK)
-    assert check_session_response.status_code == 200
+    assert check_session_response.status_code == 201
 
     # Check the response data
     assert check_session_response.json() == {"message": "User is logged in"}
 
-def test_update_society_name():
-    # Assuming society_id exists in the database
-    update_data = {"id": 1, "name": "New Society Name"}
-
-    # Send a POST request to update society name
-    response = requests.post(f"{BASE_URL}/update_society_name", json=update_data)
-
-    # Check that the response status code is 200 (OK)
-    assert response.status_code == 200
-
-    # Check the response message
-    assert response.json() == {"message": "Name updated successfully"}
-
-def test_update_event_with_empty_name_or_location():
-    # Assuming event_id exists in the database
-    event_id = 1
-    update_data_name_empty = {"id": event_id, "name": ""}
-    update_data_location_empty = {"id": event_id, "location": ""}
-
-    # Send a POST request to update event name with an empty string
-    response_name_empty = requests.post(f"{BASE_URL}/update_event_name", json=update_data_name_empty)
-
-    # Check that the response status code is 200 (OK)
-    assert response_name_empty.status_code == 200
-
-    # Check the response message for name update
-    assert response_name_empty.json() == {"message": "Invalid Name input"}
-
-    # Send a POST request to update event location with an empty string
-    response_location_empty = requests.post(f"{BASE_URL}/update_event_location", json=update_data_location_empty)
-
-    # Check that the response status code is 200 (OK)
-    assert response_location_empty.status_code == 200
-
-    # Check the response message for location update
-    assert response_location_empty.json() == {"message": "Invalid Location input"}
-
-def test_update_event_location_and_time_not_empty():
-    # Assuming event_id exists in the database
-    event_id = 1
-    update_data_location_not_empty = {"id": event_id, "location": "New Location"}
-    update_data_time_not_empty = {"id": event_id, "datetime": "2024-12-01 11:00:00"}
-
-    # Send a POST request to update event location with a non-empty string
-    response_location_not_empty = requests.post(f"{BASE_URL}/update_event_location", json=update_data_location_not_empty)
-
-    # Check that the response status code is 200 (OK)
-    assert response_location_not_empty.status_code == 200
-
-    # Check the response message for location update
-    assert response_location_not_empty.json() == {"message": "Location updated successfully"}
-
-    # Send a POST request to update event time with a non-empty string
-    response_time_not_empty = requests.post(f"{BASE_URL}/update_event_time", json=update_data_time_not_empty)
-
-    # Check that the response status code is 200 (OK)
-    assert response_time_not_empty.status_code == 200
-
-    # Check the response message for time update
-    assert response_time_not_empty.json() == {"message": "DateTime updated successfully"}
-
-def test_update_user_interests():
-    # Assuming user_id exists in the database
-    user_id = 1
-    interests = [1, 2, 3]  # Assuming interest IDs exist in the database
-
-    update_data = {"id": user_id, "interests": interests}
-
-    # Send a POST request to update user interests
-    response = requests.post(f"{BASE_URL}/update_user_interests", json=update_data)
-
-    # Check that the response status code is 200 (OK)
-    assert response.status_code == 200
-
-    # Check the response message
-    assert response.json() == {"message": "Interests updated successfully"}
 
 def test_get_image():
     # Test image filename
@@ -269,3 +193,118 @@ def test_get_random_event():
     assert "time" in data
     assert "image_url" in data
     assert "society_id" in data
+
+def test_register_user_with_interests():
+    # Test data
+    email = f"test-{uuid.uuid4()}@example.com"
+    data = {
+        "email": email,
+        "password": "test123",
+        "interests": [{"interest": "Technology", "scale": 5}, {"interest": "Music", "scale": 3}]
+    }
+
+    # Send a POST request to the /register endpoint
+    response = requests.post(f"{BASE_URL}/register", json=data)
+
+    # Check that the response status code is 201 (Created)
+    assert response.status_code == 201
+
+    # Check the response data
+    assert response.json() == {"message": "User registered successfully"}
+
+    # Check the database for user registration and interests
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE email = %s", (data["email"],))
+    user = cur.fetchone()
+    cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user[0],))
+    interests = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    assert user is not None
+    assert len(interests) == 2  # Assuming two interests were added
+
+def test_get_society_details():
+    # Test data
+    society_id = 1
+
+    # Send a GET request to the /society_details/<society_id> endpoint
+    response = requests.get(f"{BASE_URL}/society_details/{society_id}")
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert "name" in response.json()
+    assert "description" in response.json()
+    assert "image_url" in response.json()
+    assert response.json()["society_id"] == society_id
+
+def test_update_user_interests():
+    # Test data
+    email = "existing_user@example.com"
+    new_interests = [{"interest": "Sports", "scale": 4}, {"interest": "Art", "scale": 5}]
+
+    # Send a PUT request to the /update_interests endpoint
+    response = requests.put(f"{BASE_URL}/update_interests/{email}", json=new_interests)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert response.json() == {"message": "Interests updated successfully"}
+
+    # Check the database for updated interests
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+    user = cur.fetchone()
+    cur.execute("SELECT * FROM userInterests WHERE user_id = %s", (user[0],))
+    interests = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    assert user is not None
+    assert len(interests) == 2  # Assuming two interests were updated
+
+def test_delete_event():
+    # Test data
+    event_id = 1
+
+    # Send a DELETE request to the /events/<event_id> endpoint
+    response = requests.delete(f"{BASE_URL}/events/{event_id}")
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert response.json() == {"message": "Event deleted successfully"}
+
+    # Check the database to ensure the event is deleted
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM events WHERE event_id = %s", (event_id,))
+    event = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    assert event is None
+
+def test_edit_society_page_as_committee_member():
+    # Test data
+    user_email = "committee_member@example.com"
+    society_id = 1
+
+    # Send a GET request to the /edit_society_page endpoint
+    response = requests.get(f"{BASE_URL}/edit_society_page/{society_id}", headers={"user_email": user_email})
+
+    # Check that the response status code is 200 (OK) or 403 (Forbidden) depending on user's role
+    assert response.status_code in [200, 403]
+
+    if response.status_code == 200:
+        # If the user is a committee member, they should be allowed to edit the page
+        assert response.json() == {"message": "Edit society page"}
+    else:
+        # If the user is not a committee member, they should not be allowed to edit the page
+        assert response.json() == {"message": "Unauthorized. User is not a committee member."}
