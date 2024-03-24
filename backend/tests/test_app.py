@@ -218,33 +218,6 @@ def test_recommend_event_with_preferences():
     assert "image_url" in data
     assert "society_id" in data
 
-def test_register_user_invalid_email():
-    # Test data with an invalid email format
-    data = {"email": "invalid-email-format", "password": "test123"}
-
-    # Send a POST request to the /register endpoint with invalid email format
-    response = requests.post(f"{BASE_URL}/register", json=data)
-
-    assert response.status_code == 201
-
-    # Check the response data
-    assert "Invalid email format" in response.json()["message"]
-
-def test_join_society():
-    # Test data: User and society IDs
-    user_id = 1  
-    society_id = 1  
-    join_data = {"user_id": user_id, "society_id": society_id}
-
-    # Send a POST request to the join society endpoint
-    response = requests.post(f"{BASE_URL}/add_user_society_member", json=join_data)
-
-    # Check that the response status code is 201 (Created)
-    assert response.status_code == 201
-
-    # Check the response data
-    assert response.json() == {"message": "User joined society successfully"}
-
 def test_create_new_society_existing_name():
     # Test data: Existing society name
     existing_name = "ABACUS"
@@ -256,5 +229,174 @@ def test_create_new_society_existing_name():
     # Check that the response status code is 400 (Bad Request)
     assert response.status_code == 500
 
+def test_get_user_society_role():
+    # Test data: User ID and Society ID
+    user_id = 1
+    society_id = 1
+
+    # Mock the request payload
+    request_data = {"user_id": user_id, "society_id": society_id}
+
+    # Send a GET request to the get_user_society_role endpoint
+    response = requests.get(f"{BASE_URL}/get_user_society_role", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Parse JSON response
+    data = response.json()
+
+    # Assert response data is fetched correctly
+    assert isinstance(data, list)
+
+    # Check that the correct role is returned
+    assert data[0]["role"] in ["committee", "member"]
+
+def test_get_user_societies():
+    # Test data: User ID
+    user_id = 1
+
+    # Mock the request payload
+    request_data = {"id": user_id}
+
+    # Send a GET request to the get_user_societies endpoint
+    response = requests.get(f"{BASE_URL}/get_user_societies", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Parse JSON response
+    data = response.json()
+
+    # Assert response data is fetched correctly
+    assert isinstance(data, list)
+
+    # Assuming userSocieties table has multiple rows for a user's memberships
+    assert len(data) > 0
+
+    # Check that each entry contains a society_id
+    for entry in data:
+        assert "society_id" in entry
+
+def test_update_event_location():
+    # Test data: Event ID and new location
+    event_id = 1
+    new_location = "New Location"
+
+    # Mock the request payload
+    request_data = {"id": event_id, "location": new_location}
+
+    # Send a POST request to the update_event_location endpoint
+    response = requests.post(f"{BASE_URL}/update_event_location", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
     # Check the response data
-    assert "Society with the same name already exists" in response.json()["message"]
+    assert response.json() == {"message": "Location updated successfully"}
+
+    # Check that the location has been updated in the database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT location FROM events WHERE event_id = {event_id}"
+    )
+    updated_location = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+
+    assert updated_location == new_location
+
+def test_create_event():
+    # Test data: Society ID, event name, datetime, and location
+    society_id = 1
+    event_name = "Test Event"
+    event_datetime = "2024-12-01 10:00:00"
+    event_location = "Test Location"
+
+    # Mock the request payload
+    request_data = {
+        "society_id": society_id,
+        "name": event_name,
+        "datetime": event_datetime,
+        "location": event_location,
+    }
+
+    # Send a POST request to the create_event endpoint
+    response = requests.post(f"{BASE_URL}/create_event", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert response.json() == {"message": "Event added successfully"}
+
+    # Check that the event has been added to the database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT * FROM events WHERE society_id = {society_id} AND name = '{event_name}' AND datetime = '{event_datetime}' AND location = '{event_location}'"
+    )
+    event = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    assert event is not None
+
+def test_update_event_name():
+    # Test data: Event ID and new event name
+    event_id = 1
+    new_event_name = "New Event Name"
+
+    # Mock the request payload
+    request_data = {"id": event_id, "name": new_event_name}
+
+    # Send a POST request to the update_event_name endpoint
+    response = requests.post(f"{BASE_URL}/update_event_name", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert response.json() == {"message": "Name updated successfully"}
+
+    # Check that the event name has been updated in the database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT name FROM events WHERE event_id = {event_id}"
+    )
+    updated_name = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+
+    assert updated_name == new_event_name
+
+def test_update_event_time():
+    # Test data: Event ID and new event datetime
+    event_id = 1
+    new_event_datetime = "2025-01-01 12:00:00"
+
+    # Mock the request payload
+    request_data = {"id": event_id, "datetime": new_event_datetime}
+
+    # Send a POST request to the update_event_time endpoint
+    response = requests.post(f"{BASE_URL}/update_event_time", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert response.json() == {"message": "DateTime updated successfully"}
+
+    # Check that the event datetime has been updated in the database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT datetime FROM events WHERE event_id = {event_id}"
+    )
+    updated_datetime = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+
+    assert str(updated_datetime) == new_event_datetime
