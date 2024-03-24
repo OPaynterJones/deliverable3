@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import {
   BrowserRouter,
@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
 import "./global-styles.css";
+import { checkSession } from "./api/authAPI";
 
 // ------------- STYLING -------------
 function BodyStyleManager() {
@@ -32,52 +33,33 @@ function BodyStyleManager() {
 // ------------- ROUTING  -------------
 
 const RequireAuth = () => {
-  const [authenticated, setAuthenticated] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      console.log("authenticating user");
-      try {
-        const response = await fetch("http://localhost:5000/check_session", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message);
-        }
-
-        setAuthenticated(true);
-      } catch (error) {
-        console.error(error.message);
-        setAuthenticated(false);
-      }
+    const checkLoggedIn = async () => {
+      const response = await checkSession();
+      setIsAuthenticated(response.sessionValid);
+      setIsLoading(false);
     };
 
-    checkAuth();
+    checkLoggedIn();
   }, []);
 
-  if (authenticated === null) {
-    return null;
+
+  if (isLoading) {
+    return <div></div>;
   }
 
-  if (!authenticated) {
-    console.log("no existing session, goign to login");
-    return <Navigate to="/login" />;
-  }
-
-  console.log("already looged in, going to outlet");
-  return <Outlet />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
-
 // ------------- MAIN ROUTING -------------
 const App = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Navigate to="/for-you" replace />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/society/:society_name" element={<SocietyPage />} />
+      <Route path="/societies/:society_name" element={<SocietyPage />} />
       <Route element={<RequireAuth />}>
         <Route path="/for-you" element={<ForYouPage />} />
       </Route>

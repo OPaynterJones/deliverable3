@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import InputField from "../../Components/AnimtedInputField/InputField";
+import { fetchSocieties } from "../../api/getAPI";
+import { checkSession } from "../../api/authAPI";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,28 +21,12 @@ const LoginPage = () => {
 
   // check if user is logged in when page is mounted
   useEffect(() => {
-    const checkAuth = async () => {
-      console.log("authenticating user");
-      try {
-        const response = await fetch("http://localhost:5000/check_session", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message);
-        }
-
-        console.log("already logged in");
-        setAuthenticated(true);
-      } catch (error) {
-        console.error(error.message);
-        console.log("no sesssion exists");
-        setAuthenticated(false);
-      }
+    const checkLoggedIn = async () => {
+      const response = await checkSession();
+      console.log(response);
+      setAuthenticated(response.sessionValid);
     };
-    checkAuth();
+    checkLoggedIn();
   }, []);
 
   // redirect if authentication status changes
@@ -88,23 +74,12 @@ const LoginPage = () => {
 
   // get available socities
   useEffect(() => {
-    const fetchSocieties = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/societies", {
-          method: "GET",
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch societies");
-        }
-        const data = await response.json();
-        setSocieties(data.society_names);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-
     if (isCommitteeMember) {
-      fetchSocieties();
+      try {
+        fetchSocieties().then(setSocieties);
+      } catch (error) {
+        console.error("Error fetching societies:", error);
+      }
     }
   }, [isCommitteeMember]);
 
