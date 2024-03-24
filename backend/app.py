@@ -777,6 +777,9 @@ def set_userinterest():
     return f"Interest changed for user {user_id}: {interest} {old_scale[0]} -> {scale}"
 
 
+# ----------------------------------
+
+
 @app.route("/login", methods=["POST"])
 def login():
     cookie = request.cookies.get("session_token")
@@ -829,6 +832,7 @@ def register():
     email = data["email"]
     password = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
     cur = mysql.connection.cursor()
+
     try:
         cur.execute(
             "INSERT INTO users (email, password) VALUES (%s, %s)",
@@ -836,10 +840,28 @@ def register():
         )
         mysql.connection.commit()
 
+        cur.execute("SELECT LAST_INSERT_ID()")
+        user_id = cur.fetchone()[0]
+
+        if "affiliatedSociety" in data and data["affiliatedSociety"]:
+            society_id = get_society_id(data["affiliatedSociety"])
+
+            cur.execute("SELECT * FROM societies WHERE society_id = %s", (society_id,))
+            if cur.fetchone() is None:
+                return jsonify({"message": "Invalid society provided"}), 400
+
+            cur.execute(
+                "INSERT INTO userSocieties (society_id, user_id, role) VALUES (%s, %s, %s)",
+                (society_id, user_id, "commitee"),
+            )
+            mysql.connection.commit()
+
         return jsonify({"message": "User registered successfully"}), 201
+
     except MySQLdb.IntegrityError as error:
         mysql.connection.rollback()
-        return jsonify({"message": f"User registration unsuccessful {str(error)}"}), 500
+        return jsonify({"message": f"User registration unsuccessful"}), 500
+
     finally:
         cur.close()
 
@@ -858,17 +880,6 @@ def check_session():
     else:
         app.logger.debug("Invalid session token")
         return jsonify({"message": "Invalid session token"}), 401
-
-
-def validate_session_token(token):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM sessions WHERE session_token = %s", (token,))
-    session_dbrecord = cur.fetchone()
-    cur.close()
-
-    if session_dbrecord:
-        return True
-    return False
 
 
 @app.route("/recommend_event")
@@ -935,35 +946,39 @@ def get_image(filename):
         return jsonify({"message": "An error occurred"}), 500
 
 
-@app.route("/demo")
-def demo():
-    def get_next_event():
-        events = [
-            {
-                "title": "Indoor Football Turn up and play",
-                "description": 'Calling all football fans! Join a casual indoor football match at Founders Hall on Monday, March 18th from 3pm to 5pm. This is a "turn up and play" event, so no need to register beforehand. Just show up, grab some friends (or play with others there), and get ready for some fun on the pitch. All skill levels are welcome!',
-                "location": "Founders Hall",
-                "time": "2024-03-18 15:00:00",
-                "image_url": "http://localhost:5000/images/football-event-1.png",  # Construct image URL
-                "society_id": "Association Football & Futsal",
-            },
-            {
-                "title": "Indoor Football Turn up and play",
-                "description": 'Calling all football fans! Join a casual indoor football match at Founders Hall on Monday, March 18th from 3pm to 5pm. This is a "turn up and play" event, so no need to register beforehand. Just show up, grab some friends (or play with others there), and get ready for some fun on the pitch. All skill levels are welcome!',
-                "location": "Founders Hall",
-                "time": "2024-03-18 15:00:00",
-                "image_url": "http://localhost:5000/images/football-event-1.png",  # Construct image URL
-                "society_id": "Association Football & Futsal",
-            },
-        ]
+@app.route("/societies", methods=["GET"])
+def get_socities():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT name FROM societies")
+    data = cur.fetchall()
+    cur.close()
+    data = [s[0] for s in data]
+    return jsonify({"society_names": data}), 200
 
-        while True:
-            for event in events:
-                yield event
 
-    event = get_next_event()
-    app.logger.debug(event)
-    return jsonify(event), 200
+# ------------------- UTIL FUNCTIONS ------------------------
+
+
+def validate_session_token(token):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM sessions WHERE session_token = %s", (token,))
+    session_dbrecord = cur.fetchone()
+    cur.close()
+
+    if session_dbrecord:
+        return True
+    return False
+
+
+def get_society_id(society_name):
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT society_id FROM societies WHERE name = %s", (society_name,))
+    society_id = cursor.fetchone()
+    cursor.close()
+
+    if society_id:
+        return society_id
+    return None
 
 
 if __name__ == "__main__":
