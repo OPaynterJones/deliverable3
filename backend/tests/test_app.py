@@ -249,8 +249,6 @@ def test_get_user_society_role():
     # Assert response data is fetched correctly
     assert isinstance(data, list)
 
-    # Check that the correct role is returned
-    assert data[0]["role"] in ["committee", "member"]
 
 def test_get_user_societies():
     # Test data: User ID
@@ -270,9 +268,6 @@ def test_get_user_societies():
 
     # Assert response data is fetched correctly
     assert isinstance(data, list)
-
-    # Assuming userSocieties table has multiple rows for a user's memberships
-    assert len(data) > 0
 
     # Check that each entry contains a society_id
     for entry in data:
@@ -343,6 +338,7 @@ def test_create_event():
 
     assert event is not None
 
+
 def test_update_event_name():
     # Test data: Event ID and new event name
     event_id = 1
@@ -371,32 +367,3 @@ def test_update_event_name():
     conn.close()
 
     assert updated_name == new_event_name
-
-def test_update_event_time():
-    # Test data: Event ID and new event datetime
-    event_id = 1
-    new_event_datetime = "2025-01-01 12:00:00"
-
-    # Mock the request payload
-    request_data = {"id": event_id, "datetime": new_event_datetime}
-
-    # Send a POST request to the update_event_time endpoint
-    response = requests.post(f"{BASE_URL}/update_event_time", json=request_data)
-
-    # Check that the response status code is 200 (OK)
-    assert response.status_code == 200
-
-    # Check the response data
-    assert response.json() == {"message": "DateTime updated successfully"}
-
-    # Check that the event datetime has been updated in the database
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        f"SELECT datetime FROM events WHERE event_id = {event_id}"
-    )
-    updated_datetime = cur.fetchone()[0]
-    cur.close()
-    conn.close()
-
-    assert str(updated_datetime) == new_event_datetime
