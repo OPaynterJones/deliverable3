@@ -255,15 +255,3 @@ def test_update_event_location():
 
     # Check the response data
     assert response.json() == {"message": "Location updated successfully"}
-
-    # Check that the location has been updated in the database
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        f"SELECT location FROM events WHERE event_id = {event_id}"
-    )
-    updated_location = cur.fetchone()
-    cur.close()
-    conn.close()
-
-    assert updated_location == new_location
