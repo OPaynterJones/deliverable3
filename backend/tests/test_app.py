@@ -255,3 +255,52 @@ def test_update_event_location():
 
     # Check the response data
     assert response.json() == {"message": "Location updated successfully"}
+
+def test_suggest_event():
+    # Mock a valid session token
+    session_token = "valid_session_token"
+
+    # Mock user ID retrieved from the session token
+    user_id = 1
+
+    # Mock predicted societies data
+    predicted_societies = [("Society A",), ("Society B",)]
+
+    # Mock upcoming event data
+    event_id = 1
+    event_name = "Test Event"
+    event_description = "Description of the test event"
+    event_location = "Test Location"
+    event_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    society_id = 1
+
+    # Mock database cursor and execute method
+    cursor_mock = MagicMock()
+    cursor_mock.fetchone.side_effect = [(event_id, event_name, event_description, event_location, event_time, "", society_id), None]
+    cursor_mock.fetchall.return_value = predicted_societies
+
+    # Mock get_user_id function
+    with patch("__main__.get_user_id", return_value=user_id):
+        # Mock datetime.now() to return a fixed value
+        with patch("datetime.datetime") as mock_datetime:
+            mock_datetime.now.return_value.date.return_value = date.today()
+
+            # Mock MySQL connection and cursor
+            with patch("__main__.mysql.connection.cursor", return_value=cursor_mock):
+                # Send a GET request to the suggest_event endpoint
+                response = requests.get(f"{BASE_URL}/suggest_event", cookies={"session_token": session_token})
+
+                # Check that the response status code is 200 (OK)
+                assert response.status_code == 200
+
+                # Check the response data
+                expected_data = {
+                    "id": event_id,
+                    "title": event_name,
+                    "description": event_description,
+                    "location": event_location,
+                    "time": event_time,
+                    "image_url": "",
+                    "society_id": society_id
+                }
+                assert response.json() == expected_data
