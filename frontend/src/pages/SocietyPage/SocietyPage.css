@@ -43,7 +43,7 @@
   flex: 1;
 }
 
-.society-info-container .description {
+.description {
   color: gray;
   font-size: 0.85rem;
   padding: 1rem;
@@ -53,41 +53,46 @@
   resize: none;
   height: 30vh;
   overflow-y: auto;
-  border: 1px solid var(--primary-color);
-}
-
-.details-table {
-  width: 100%;
+  border: 2px solid transparent;
+  border-radius: 8px;
 }
 
 .society-detail {
   display: flex;
   justify-content: space-between;
   padding: 1rem;
-  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
 .society-detail-key {
+  display: flex;
+  align-items: center;
   text-align: center;
   font-weight: bold;
   font-size: 1.5rem;
+  height: auto;
 }
 
 .society-detail-value {
-  font-size: 0.85rem;
-  width: 50%;
-  display: flex;
-  align-items: center;
-  border: 1px solid transparent;
+  width: 65%;
+  max-width: 100%;
+  border: 2px solid transparent;
   padding: 2px;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0px 1rem;
+  border-radius: 8px;
+  height: auto;
 }
 
-.society-detail-value textarea {
-  font-size: 0.85rem;
-  width: 100%;
-  border: 1px solid var(--primary-color);
-  padding: 2px; 
-  margin: 0; 
-  overflow: visible;
+.edit-button {
+  position: absolute;
+  bottom: 4vh;
+  right: 2vw;
+  border: 0px;
+  background-color: white;
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 0.5rem;
 }

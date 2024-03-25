@@ -12,7 +12,6 @@ function SocietyPage() {
   const [hasEditPermissions, setEditPermissions] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editableDetails, setEditableDetails] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,16 +30,19 @@ function SocietyPage() {
   useEffect(() => {
     if (isEditing || !societyDetails) return;
 
-    updateInformation("http://localhost:5000/societies", societyDetails);
-  }, [isEditing]);
+    const updatedSocietyDetails = { ...societyDetails };
+    const editableDivs = document.querySelectorAll(
+      ".society-info-container div[contenteditable]"
+    );
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSocietyDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
+    for (const editableDiv of editableDivs) {
+      const key = editableDiv.getAttribute("name");
+      updatedSocietyDetails[key] = editableDiv.textContent.trim();
+    }
+
+    updateInformation("http://localhost:5000/societies", updatedSocietyDetails);
+    setSocietyDetails(updatedSocietyDetails);
+  }, [isEditing]);
 
   useEffect(() => {
     console.log(societyDetails);
@@ -59,69 +61,66 @@ function SocietyPage() {
               alt={societyDetails.name}
             />
           )}
+          {hasEditPermissions && (
+            <>
+              {isEditing ? (
+                <button
+                  className="edit-button"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  className="edit-button"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  Edit Society
+                </button>
+              )}
+            </>
+          )}
           <div className="society-container">
             <div className="society-name">
               <h1>{societyDetails.name}</h1>
               <hr />
             </div>
             <div className="society-info-container">
-              {isEditing ? (
-                <div>
-                  <textarea
-                    className="description"
-                    name="description"
-                    value={societyDetails.description}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              ) : (
-                <p className="description">{societyDetails.description}</p>
-              )}
-              <table className="details-table">
-                <tbody>
-                  {Object.entries(societyDetails)
-                    .filter(([key]) => !blacklist.includes(key))
-                    .map(([key, value]) => (
-                      <tr className="society-detail" key={key}>
-                        <td className="society-detail-key">
-                          {key.charAt(0).toUpperCase() + key.slice(1)}:
-                        </td>
-                        <td className="society-detail-value" >
-                          {isEditing ? (
-                            <textarea
-                              type="text"
-                              name={key}
-                              value={societyDetails[key]}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            value
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-              {hasEditPermissions && (
-                <div>
-                  {isEditing ? ( // Render save button if editing is enabled
-                    <button
-                      className="edit-button"
-                      onClick={() => setIsEditing(!isEditing)}
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    // Render edit button if editing is not enabled
-                    <button
-                      className="edit-button"
-                      onClick={() => setIsEditing(!isEditing)}
-                    >
-                      Edit Society
-                    </button>
-                  )}
-                </div>
-              )}
+              <div
+                className="description"
+                contentEditable={isEditing ? "true" : "false"}
+                name="description"
+                style={
+                  isEditing ? { border: "2px solid var(--primary-color)" } : {}
+                }
+                suppressContentEditableWarning="true"
+              >
+                {societyDetails.description}
+              </div>
+              <div className="extra-info-container">
+                {Object.entries(societyDetails)
+                  .filter(([key]) => !blacklist.includes(key))
+                  .map(([key, value]) => (
+                    <div className="society-detail" key={key}>
+                      <div className="society-detail-key">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}:
+                      </div>
+                      <div
+                        className="society-detail-value"
+                        contentEditable={isEditing ? "true" : "false"}
+                        name={key}
+                        style={
+                          isEditing
+                            ? { border: "2px solid var(--primary-color)" }
+                            : {}
+                        }
+                        suppressContentEditableWarning="true"
+                      >
+                        {societyDetails[key]}
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
         </>
