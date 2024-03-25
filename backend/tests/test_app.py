@@ -193,3 +193,87 @@ def test_get_random_event():
     assert "time" in data
     assert "image_url" in data
     assert "society_id" in data
+
+def test_create_new_society_existing_name():
+    # Test data: Existing society name
+    existing_name = "ABACUS"
+    society_data = {"name": existing_name, "description": "Description of the society"}
+
+    # Send a POST request to the create society endpoint
+    response = requests.post(f"{BASE_URL}/create_society", json=society_data)
+
+    # Check that the response status code is 400 (Bad Request)
+    assert response.status_code == 500
+
+def test_get_user_society_role():
+    # Test data: User ID and Society ID
+    user_id = 1
+    society_id = 1
+
+    # Mock the request payload
+    request_data = {"user_id": user_id, "society_id": society_id}
+
+    # Send a GET request to the get_user_society_role endpoint
+    response = requests.get(f"{BASE_URL}/get_user_society_role", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Parse JSON response
+    data = response.json()
+
+    # Assert response data is fetched correctly
+    assert isinstance(data, list)
+
+
+def test_get_user_societies():
+    # Test data: User ID
+    user_id = 1
+
+    # Mock the request payload
+    request_data = {"id": user_id}
+
+    # Send a GET request to the get_user_societies endpoint
+    response = requests.get(f"{BASE_URL}/get_user_societies", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Parse JSON response
+    data = response.json()
+
+    # Assert response data is fetched correctly
+    assert isinstance(data, list)
+
+    # Check that each entry contains a society_id
+    for entry in data:
+        assert "society_id" in entry
+
+def test_update_event_location():
+    # Test data: Event ID and new location
+    event_id = 1
+    new_location = "New Location"
+
+    # Mock the request payload
+    request_data = {"id": event_id, "location": new_location}
+
+    # Send a POST request to the update_event_location endpoint
+    response = requests.post(f"{BASE_URL}/update_event_location", json=request_data)
+
+    # Check that the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    assert response.json() == {"message": "Location updated successfully"}
+
+    # Check that the location has been updated in the database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT location FROM events WHERE event_id = {event_id}"
+    )
+    updated_location = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+
+    assert updated_location == new_location
