@@ -1,70 +1,93 @@
 .society-page {
-    width: 100%;
-    height: 100vh;
-  }
-  
-  .society-image {
-    position: absolute;
-    top: 7vh;
-    right: 2vw;
-    overflow: hidden;
-    object-fit: fill;
-    width: 36vw;
-    height: 35vh;
-    border-radius: 8px;
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.2);
-  }
-  
-  .society-container {
-    display: flex;
-    flex-direction: column;
-    max-width: 45vw;
-    position: relative;
-    height: 100%;
-    overflow: hidden;
-  }
-  
-  .society-name {
-    margin: 1rem;
-    text-align: center;
-  }
-  
-  .society-name h1 {
-    font-weight: bold;
-    font-size: 2rem;
-  }
-  
-  .society-info-container {
-    margin: 1rem;
-    word-wrap: break-word;
-    flex-grow: 1;
-    overflow-y: auto;
-    flex: 1;
-  }
-  
-  .society-info-container .description {
-    color: gray;
-    font-size: 0.85rem;
-    padding: 1rem;
-    margin: 0;
-  }
-  
-  .society-detail {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-  }
-  
-  .society-detail-key {
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.5rem;
-  }
-  
-  .society-detail-value {
-    font-size: 0.85rem;
-    max-width: 50%;
-    display: flex;
-    align-items: center;
-  }
-  
+  width: 100%;
+  height: 100vh;
+}
+
+.society-image {
+  position: absolute;
+  top: 7vh;
+  right: 2vw;
+  overflow: hidden;
+  object-fit: fill;
+  width: 36vw;
+  height: 35vh;
+  border-radius: 8px;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.society-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 45vw;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.society-name {
+  margin: 1rem;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.society-name h1 {
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.society-info-container {
+  margin: 1rem;
+  word-wrap: break-word;
+  flex-grow: 1;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.society-info-container .description {
+  color: gray;
+  font-size: 0.85rem;
+  padding: 1rem;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  height: 30vh;
+  overflow-y: auto;
+  border: 1px solid var(--primary-color);
+}
+
+.details-table {
+  width: 100%;
+}
+
+.society-detail {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.society-detail-key {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.society-detail-value {
+  font-size: 0.85rem;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  padding: 2px;
+}
+
+.society-detail-value textarea {
+  font-size: 0.85rem;
+  width: 100%;
+  border: 1px solid var(--primary-color);
+  padding: 2px; 
+  margin: 0; 
+  overflow: visible;
+}

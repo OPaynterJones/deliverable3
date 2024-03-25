@@ -3,52 +3,50 @@ import { useState, useEffect } from "react";
 import "./SocietyPage.css";
 import { getSociety } from "../../api/getAPI";
 import { checkSession } from "../../api/authAPI";
+import { updateInformation } from "../../api/setAPI";
 
 function SocietyPage() {
-  const [hasEditPermissions, setEditPermissions] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); // State to track whether editing is enabled
   const { society_name } = useParams();
-
   const [societyDetails, setSocietyDetails] = useState(null);
-  const [editableDetails, setEditableDetails] = useState({}); // State to store editable details
+
+  const [hasEditPermissions, setEditPermissions] = useState(false);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableDetails, setEditableDetails] = useState({});
 
   useEffect(() => {
-    getSociety(society_name).then(setSocietyDetails);
-  }, [society_name]);
+    const fetchData = async () => {
+      const societyDetails = await getSociety(society_name);
+      setSocietyDetails(societyDetails);
 
-  useEffect(() => {
-    const checkLoggedIn = async () => {
       if (societyDetails && societyDetails.society_id) {
         const response = await checkSession(societyDetails.society_id);
         setEditPermissions(response.hasEditPermissions);
       }
     };
 
-    checkLoggedIn();
-  }, [societyDetails]);
+    fetchData();
+  }, [society_name]);
 
   useEffect(() => {
-    if (isEditing && societyDetails) {
-      setEditableDetails({ ...societyDetails });
-    }
-  }, [isEditing, societyDetails]);
+    if (isEditing || !societyDetails) return;
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveClick = () => {
-    setIsEditing(false);
-    setSocietyDetails(editableDetails);
-  };
+    updateInformation("http://localhost:5000/societies", societyDetails);
+  }, [isEditing]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditableDetails((prevDetails) => ({
+    setSocietyDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    console.log(societyDetails);
+  }, [societyDetails]);
+
+  const blacklist = ["description", "society_id", "name", "image_url"];
 
   return (
     <div className="society-page">
@@ -70,45 +68,55 @@ function SocietyPage() {
               {isEditing ? (
                 <div>
                   <textarea
+                    className="description"
                     name="description"
-                    value={editableDetails.description}
+                    value={societyDetails.description}
                     onChange={handleInputChange}
                   />
                 </div>
               ) : (
                 <p className="description">{societyDetails.description}</p>
               )}
-              <table>
+              <table className="details-table">
                 <tbody>
-                  {Object.entries(societyDetails).map(([key, value]) => (
-                    <tr className="society-detail" key={key}>
-                      <td className="society-detail-key">
-                        {key.charAt(0).toUpperCase() + key.slice(1)}:
-                      </td>
-                      <td className="society-detail-value">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            name={key}
-                            value={editableDetails[key]}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          value
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {Object.entries(societyDetails)
+                    .filter(([key]) => !blacklist.includes(key))
+                    .map(([key, value]) => (
+                      <tr className="society-detail" key={key}>
+                        <td className="society-detail-key">
+                          {key.charAt(0).toUpperCase() + key.slice(1)}:
+                        </td>
+                        <td className="society-detail-value" >
+                          {isEditing ? (
+                            <textarea
+                              type="text"
+                              name={key}
+                              value={societyDetails[key]}
+                              onChange={handleInputChange}
+                            />
+                          ) : (
+                            value
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
               {hasEditPermissions && (
                 <div>
                   {isEditing ? ( // Render save button if editing is enabled
-                    <button className="edit-button" onClick={handleSaveClick}>
+                    <button
+                      className="edit-button"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
                       Save
                     </button>
-                  ) : ( // Render edit button if editing is not enabled
-                    <button className="edit-button" onClick={handleEditClick}>
+                  ) : (
+                    // Render edit button if editing is not enabled
+                    <button
+                      className="edit-button"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
                       Edit Society
                     </button>
                   )}
