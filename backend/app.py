@@ -828,23 +828,25 @@ def register():
         cur.close()
 
 
-@app.route("/check_session", methods=["GET"])
+@app.route("/check_session", methods=["POST"])
 def check_session():
-    app.logger.debug("Received session authentication request")
     session_token = request.cookies.get("session_token")
 
     if not session_token:
-        return jsonify({"message": "No session token found"}), 401
+        return jsonify({"message": "Not authorised: no session token"}), 401
 
-    if validate_session_token(session_token):
-        app.logger.debug("User is logged in")
-        return jsonify({"message": "User is logged in"}), 200
-    else:
-        app.logger.debug("Invalid session token")
-        return jsonify({"message": "Invalid session token"}), 401
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 401
+
+    data = request.get_json()
+    society_id = data.get("society_id")
+    if has_edit_permissions(get_user_id(session_token), society_id):
+        return jsonify({"message": "Authorised", "has_edit_permissions": True}), 200
+
+    return jsonify({"message": "Authorised"}), 200
 
 
-@app.route("/recommend_event")
+@app.route("/recommend_event", methods=["GET"])
 def get_recommended_event():
     try:
         conn = mysql.connection
@@ -941,6 +943,23 @@ def get_society_id(society_name):
     if society_id:
         return society_id
     return None
+
+
+def has_edit_permissions(user_id, society_id):
+    if not society_id or not user_id:
+        return False
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(
+        f"SELECT 1 FROM userSocieties WHERE user_id = %s AND society_id = %s AND role = 'commitee'",
+        (user_id, society_id),
+    )
+    result = cursor.fetchone()
+    cursor.close()
+
+    if result:
+        return True
+    return False
 
 
 if __name__ == "__main__":
