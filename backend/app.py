@@ -255,7 +255,7 @@ def set_event_data():
     if not request.is_json:
         return jsonify({"message": "Content type not supported (Not json)"})
     request_data = request.json
-    
+
     society_id = request_data.get("society_id")
     name = request_data.get("name")
     datetime = request_data.get("datetime")  # SQL DateTime format YYYY-MM-DD HH:MI:SS
@@ -280,7 +280,7 @@ def set_event_data():
 
     cursor = mysql.connection.cursor()
     cursor.execute(
-        f"INSERT INTO events (event_name, event_time, location, society_id) VALUES ('{name}', '{datetime}', '{location}', '{society_id})"
+        f"INSERT INTO events (society_id, name, datetime, location) VALUES ({society_id}, '{name}', '{datetime}', '{location}')"
     )
     mysql.connection.commit()
     cursor.close()
@@ -301,7 +301,7 @@ def set_event_name():
         return jsonify({"message": "Invalid Name input"})
 
     cursor = mysql.connection.cursor()
-    cursor.execute(f"UPDATE events SET event_name = '{name}' WHERE event_id = {event_id}")
+    cursor.execute(f"UPDATE events SET name = '{name}' WHERE event_id = {event_id}")
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Name updated successfully"})
