@@ -690,7 +690,7 @@ def get_user_id(session_token):
     result = cur.fetchone()
 
     if result:
-        return result
+        return result[0]
     return None
 
 
@@ -910,17 +910,55 @@ def get_image(filename):
         return jsonify({"message": "An error occurred"}), 500
 
 
-@app.route("/societies", methods=["GET"])
-def get_socities():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT name FROM societies")
-    data = cur.fetchall()
-    cur.close()
-    data = [s[0] for s in data]
-    return jsonify({"society_names": data}), 200
+@app.route("/societies", methods=["PUT"])
+def update_society_details():
+    session_token = request.cookies.get("session_token")
+
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 401
+
+    payload = request.get_json()
+
+    data = payload.get("data")
+    society_id = data.get("society_id")
+
+    if not has_edit_permissions(get_user_id(session_token), society_id):
+        return jsonify({"message": "Not authorised "}), 403
+
+    try:
+        update_response = update_society(data)
+        return jsonify({"message": "Good response; Set"}), 200
+    except Exception as err:
+        app.logger.debug(err)
+        return jsonify({"message": f"Invalid request data"}), 400
 
 
 # ------------------- UTIL FUNCTIONS ------------------------
+
+
+def update_society(society_data):
+    try:
+        cursor = mysql.connection.cursor()
+
+        # Unpack dictionary and use prepared statement for security
+        sql = """
+        UPDATE societies
+        SET description = %(description)s,
+            requirements = %(requirements)s,
+            location = %(location)s,
+            meeting_time = %(meeting_time)s
+        WHERE society_id = %(society_id)s
+        """
+
+        cursor.execute(sql, society_data)
+        mysql.connection.commit()
+        cursor.close()
+
+    except Exception as err:
+        app.logger.debug(f"Error updating society: {err}")
 
 
 def validate_session_token(token):
@@ -946,6 +984,8 @@ def get_society_id(society_name):
 
 
 def has_edit_permissions(user_id, society_id):
+    app.logger.debug(user_id)
+    app.logger.debug(society_id)
     if not society_id or not user_id:
         return False
 

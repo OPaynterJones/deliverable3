@@ -20,7 +20,7 @@ function BodyStyleManager() {
   const currentPage = location.pathname.substring(1);
 
   React.useEffect(() => {
-    document.body.className = currentPage.startsWith("society")
+    document.body.className = currentPage.startsWith("societies")
       ? "society-page-body"
       : currentPage + "-page-body";
   }, [currentPage]);

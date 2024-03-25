@@ -3,52 +3,52 @@ import { useState, useEffect } from "react";
 import "./SocietyPage.css";
 import { getSociety } from "../../api/getAPI";
 import { checkSession } from "../../api/authAPI";
+import { updateInformation } from "../../api/setAPI";
 
 function SocietyPage() {
-  const [hasEditPermissions, setEditPermissions] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); // State to track whether editing is enabled
   const { society_name } = useParams();
-
   const [societyDetails, setSocietyDetails] = useState(null);
-  const [editableDetails, setEditableDetails] = useState({}); // State to store editable details
+
+  const [hasEditPermissions, setEditPermissions] = useState(false);
+
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    getSociety(society_name).then(setSocietyDetails);
-  }, [society_name]);
+    const fetchData = async () => {
+      const societyDetails = await getSociety(society_name);
+      setSocietyDetails(societyDetails);
 
-  useEffect(() => {
-    const checkLoggedIn = async () => {
       if (societyDetails && societyDetails.society_id) {
         const response = await checkSession(societyDetails.society_id);
         setEditPermissions(response.hasEditPermissions);
       }
     };
 
-    checkLoggedIn();
-  }, [societyDetails]);
+    fetchData();
+  }, [society_name]);
 
   useEffect(() => {
-    if (isEditing && societyDetails) {
-      setEditableDetails({ ...societyDetails });
+    if (isEditing || !societyDetails) return;
+
+    const updatedSocietyDetails = { ...societyDetails };
+    const editableDivs = document.querySelectorAll(
+      ".society-info-container div[contenteditable]"
+    );
+
+    for (const editableDiv of editableDivs) {
+      const key = editableDiv.getAttribute("name");
+      updatedSocietyDetails[key] = editableDiv.textContent.trim();
     }
-  }, [isEditing, societyDetails]);
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
+    updateInformation("http://localhost:5000/societies", updatedSocietyDetails);
+    setSocietyDetails(updatedSocietyDetails);
+  }, [isEditing]);
 
-  const handleSaveClick = () => {
-    setIsEditing(false);
-    setSocietyDetails(editableDetails);
-  };
+  useEffect(() => {
+    console.log(societyDetails);
+  }, [societyDetails]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditableDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
+  const blacklist = ["description", "society_id", "name", "image_url"];
 
   return (
     <div className="society-page">
@@ -61,59 +61,66 @@ function SocietyPage() {
               alt={societyDetails.name}
             />
           )}
+          {hasEditPermissions && (
+            <>
+              {isEditing ? (
+                <button
+                  className="edit-button"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  className="edit-button"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  Edit Society
+                </button>
+              )}
+            </>
+          )}
           <div className="society-container">
             <div className="society-name">
               <h1>{societyDetails.name}</h1>
               <hr />
             </div>
             <div className="society-info-container">
-              {isEditing ? (
-                <div>
-                  <textarea
-                    name="description"
-                    value={editableDetails.description}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              ) : (
-                <p className="description">{societyDetails.description}</p>
-              )}
-              <table>
-                <tbody>
-                  {Object.entries(societyDetails).map(([key, value]) => (
-                    <tr className="society-detail" key={key}>
-                      <td className="society-detail-key">
+              <div
+                className="description"
+                contentEditable={isEditing ? "true" : "false"}
+                name="description"
+                style={
+                  isEditing ? { border: "2px solid var(--primary-color)" } : {}
+                }
+                suppressContentEditableWarning="true"
+              >
+                {societyDetails.description}
+              </div>
+              <div className="extra-info-container">
+                {Object.entries(societyDetails)
+                  .filter(([key]) => !blacklist.includes(key))
+                  .map(([key, value]) => (
+                    <div className="society-detail" key={key}>
+                      <div className="society-detail-key">
                         {key.charAt(0).toUpperCase() + key.slice(1)}:
-                      </td>
-                      <td className="society-detail-value">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            name={key}
-                            value={editableDetails[key]}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          value
-                        )}
-                      </td>
-                    </tr>
+                      </div>
+                      <div
+                        className="society-detail-value"
+                        contentEditable={isEditing ? "true" : "false"}
+                        name={key}
+                        style={
+                          isEditing
+                            ? { border: "2px solid var(--primary-color)" }
+                            : {}
+                        }
+                        suppressContentEditableWarning="true"
+                      >
+                        {societyDetails[key]}
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-              {hasEditPermissions && (
-                <div>
-                  {isEditing ? ( // Render save button if editing is enabled
-                    <button className="edit-button" onClick={handleSaveClick}>
-                      Save
-                    </button>
-                  ) : ( // Render edit button if editing is not enabled
-                    <button className="edit-button" onClick={handleEditClick}>
-                      Edit Society
-                    </button>
-                  )}
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </>
