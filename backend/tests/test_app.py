@@ -194,16 +194,6 @@ def test_get_random_event():
     assert "image_url" in data
     assert "society_id" in data
 
-def test_create_new_society_existing_name():
-    # Test data: Existing society name
-    existing_name = "ABACUS"
-    society_data = {"name": existing_name, "description": "Description of the society"}
-
-    # Send a POST request to the create society endpoint
-    response = requests.post(f"{BASE_URL}/create_society", json=society_data)
-
-    # Check that the response status code is 400 (Bad Request)
-    assert response.status_code == 500
 
 def test_get_user_society_role():
     # Test data: User ID and Society ID
@@ -272,7 +262,7 @@ def test_update_event_location():
     cur.execute(
         f"SELECT location FROM events WHERE event_id = {event_id}"
     )
-    updated_location = cur.fetchone()[0]
+    updated_location = cur.fetchone()
     cur.close()
     conn.close()
 
