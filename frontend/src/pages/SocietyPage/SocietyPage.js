@@ -44,10 +44,6 @@ function SocietyPage() {
     setSocietyDetails(updatedSocietyDetails);
   }, [isEditing]);
 
-  useEffect(() => {
-    console.log(societyDetails);
-  }, [societyDetails]);
-
   const blacklist = ["description", "society_id", "name", "image_url"];
 
   return (

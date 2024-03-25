@@ -910,6 +910,16 @@ def get_image(filename):
         return jsonify({"message": "An error occurred"}), 500
 
 
+@app.route("/societies", methods=["GET"])
+def get_socities():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT name FROM societies")
+    data = cur.fetchall()
+    cur.close()
+    data = [s[0] for s in data]
+    return jsonify({"society_names": data}), 200
+
+
 @app.route("/societies", methods=["PUT"])
 def update_society_details():
     session_token = request.cookies.get("session_token")
