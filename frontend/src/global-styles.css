@@ -8,7 +8,7 @@
   --dark-blue: #073854;
   --light-blue: #b8dff5;
   --semi-dark-blue: #1a6794;
-  --dark-blue-hover: #073854;
+  --dark-blue-hover: #0e4c70;
 
   --primary-color: var(--dark-blue);
   --secondary-color: var(--semi-dark-blue);
@@ -45,8 +45,9 @@
   background-image: linear-gradient(
     90deg,
     var(--light-blue),
-    var(--light-blue), 15%,
-    white 15%, 
+    var(--light-blue),
+    15%,
+    white 15%,
     white 80%,
     var(--light-blue) 80%
   );
@@ -64,4 +65,11 @@
   padding: 0;
   max-height: 100vh;
   width: 100vw;
+}
+
+.chose-your-interests-page-body {
+  padding: 0px;
+  margin: 0px;
+  width: 100vw;
+  overflow-y: hidden;
 }

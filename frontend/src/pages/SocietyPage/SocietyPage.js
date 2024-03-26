@@ -28,7 +28,7 @@ function SocietyPage() {
   }, [society_name]);
 
   useEffect(() => {
-    if (isEditing || !societyDetails) return;
+    if (isEditing || !societyDetails) return; 
 
     const updatedSocietyDetails = { ...societyDetails };
     const editableDivs = document.querySelectorAll(

@@ -11,6 +11,7 @@ import {
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
+import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChoseYourInterestspage";
 import "./global-styles.css";
 import { checkSession } from "./api/authAPI";
 
@@ -46,7 +47,6 @@ const RequireAuth = () => {
     checkLoggedIn();
   }, []);
 
-
   if (isLoading) {
     return <div></div>;
   }
@@ -60,6 +60,10 @@ const App = () => (
       <Route path="/" element={<Navigate to="/for-you" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/societies/:society_name" element={<SocietyPage />} />
+      <Route
+        path="/chose-your-interests"
+        element={<ChooseYourInterestsPage />}
+      />
       <Route element={<RequireAuth />}>
         <Route path="/for-you" element={<ForYouPage />} />
       </Route>

@@ -1,0 +1,15 @@
+.interest-group-container {
+  width: fit-content;
+}
+
+.boundary {
+  position: relative;
+  display: flex;
+  width: 150px;
+  height: 150px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  /* border: 1px solid red; */
+  transition: width 0.5s, height 0.5s;
+}
