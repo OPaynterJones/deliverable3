@@ -11,7 +11,7 @@ import {
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
-import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChoseYourInterestspage";
+import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChoseYourInterestsPage";
 import "./global-styles.css";
 import { checkSession } from "./api/authAPI";
 
