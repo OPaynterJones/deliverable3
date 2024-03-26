@@ -66,23 +66,46 @@ def get_user_name():
 
 
 # create new user set username, password, name to table users
+import random
 @app.route("/create_user", methods=["POST"])
 def set_user_data():
     if not request.is_json:
-        return jsonify({"message": "Content type not supported (Not json)"})
-    request_data = request.json
+        return jsonify({"message": "Content type not supported (Not json)"}), 400
 
+    request_data = request.json
     username = request_data.get("username")
     password = request_data.get("password")
     name = request_data.get("name")
 
-    cursor = mysql.connection.cursor()
-    cursor.execute(
-        f"INSERT INTO users (username, password, name) VALUES ('{username}', '{password}', '{name}')"
-    )
-    mysql.connection.commit()
-    cursor.close()
-    return jsonify({"message": "User added successfully"})
+    if not username or not password or not name:
+        return jsonify({"message": "Username, password, and name are required fields"}), 400
+
+    try:
+        cursor = mysql.connection.cursor()
+
+        # Insert user into users table
+        cursor.execute("INSERT INTO users (username, password, name) VALUES (%s, %s, %s)",
+                       (username, password, name))
+        
+        # Fetch all interests from the interests table
+        cursor.execute("SELECT interest FROM interests")
+        interests = cursor.fetchall()
+        
+        # Assign a random interest scale for each interest
+        for interest in interests:
+            scale = random.choice([3, 8])  # Randomly choose between 3 and 8
+            cursor.execute(
+                "INSERT INTO userInterests (user_id, interest, scale) VALUES (LAST_INSERT_ID(), %s, %s)",
+                (interest[0], scale)
+            )
+
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({"message": "User added successfully"}), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred while processing the request",
+                        "error": str(e)}), 500
+
 
 
 # set updated user password by user_id
