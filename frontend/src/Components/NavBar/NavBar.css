@@ -1,41 +1,50 @@
 .navBar {
+  box-sizing: border-box;
   position: sticky;
-  top: 0;
-  left: 0;
+  width: 100%;
+  height: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0rem 1rem;
-  background-color: var(--semi-dark-blue);
-  color: white;
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: var(--primary-color);
   z-index: 100;
-  height: 6vh;
+  color: white;
+}
+
+.app-name {
+  flex: 0 0 auto;
+  margin-right: 1rem;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .title {
-  font-weight: bold;
+  font-size: 1.5rem;
+  flex: 1;
+  text-align: center;
+  margin: 0px;
 }
 
 .links {
   display: flex;
+  flex: 0 0 auto;
+  display: flex;
   gap: 2rem;
-  text-decoration: none;
   align-items: center;
 }
 
 .links a {
-  font-size: 0.8rem;
   text-decoration: none;
-  color: inherit;
+  color: white;
 }
 
 .links button {
-  outline: white;
-  background-color: var(--semi-dark-blue);
+  background-color: white;
   border-radius: 8px;
-  color: white;
-  font-size: 0.8rem;
-  border-width: 1px;
-
+  color: var(--text-primary);
+  border: 0px;
+  padding: 4px 6px;
 }

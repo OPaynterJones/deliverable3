@@ -1,12 +1,12 @@
 import React from "react";
 import "./NavBar.css";
 
-const NavBar = () => {
+const NavBar = ({ title }) => {
   const handleLogout = async () => {
     try {
       const response = await fetch("/logout", {
-        method: "POST", // Use POST for logout endpoint
-        credentials: "include", // Important for sending cookies
+        method: "POST",
+        credentials: "include",
       });
 
       if (response.status === 200) {
@@ -21,7 +21,8 @@ const NavBar = () => {
 
   return (
     <nav className="navBar">
-      <div className="title">Society Matchmaker</div>
+      <div className="app-name">Society Matchmaker</div>
+      <h1 className="title">{title}</h1>
       <div className="links">
         <a href="#">Find your events</a>
         <a href="#">Profile</a>
