@@ -42,7 +42,6 @@ const RequireAuth = () => {
       try {
         const response = await checkSession();
         setIsAuthenticated(response.sessionValid);
-        console.log(isAuthenticated);
       } catch (err) {
         console.log(err);
       }

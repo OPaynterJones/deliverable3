@@ -85,7 +85,14 @@ CREATE TABLE `interestPredictions` (
 );
 
 INSERT INTO societies (name, description, requirements, location, meeting_time, image_url) VALUES 
-('Powerlifting', 'Train and compete in powerlifting events with our society.', 'no previous experience needed. Equiptment is commonly used, but is by no means a barrier to entry. All forms of fitness welcome!', 'Jumps and throws hall, sports training village', 'Every monday 2000-2200', 'http://localhost:5000/images/powerlifting-society.png');
+('Hockey', 'HOckey description', 'hockey experience', 'hockey lockation', 'hockey time', 'http://localhost:5000/images/hockey-society.png'),
+('Powerlifting', 'Train and compete in powerlifting events with our society.', 'no previous experience needed. Equiptment is commonly used, but is by no means a barrier to entry. All forms of fitness welcome!', 'Jumps and throws hall, sports training village', 'Every monday 2000-2200', 'http://localhost:5000/images/powerlifting-society.png'),
+('Rowing', 'Rowing description', 'Rowing experience', 'Rowing lockation', 'Rowing time', 'http://localhost:5000/images/rowing-society.png');
+
+INSERT INTO events (event_name, description, location, event_time, image_filename, society_id) VALUES
+('Hockey Event', 'Description for Hockey Event', 'Location for Hockey', '2024-05-04 13:00:00', 'http://localhost:5000/images/hockey-society.png', 1),
+('Powerlifting Event', 'Description for Powerlifting Event', 'Location for Powerlifting', '2024-05-13 22:00:00', 'http://localhost:5000/images/powerlifting-society-event-1.png', 2),
+('Rowing Event', 'Description for Rowing Event', 'Location for Rowing', '2024-05-24 09:00:00', 'http://localhost:5000/images/rowing-society.png', 3);
 
 INSERT INTO interests (interest, description) VALUES 
 ('Academic', 'Interest in academic pursuits and intellectual activities'),
@@ -159,7 +166,7 @@ INSERT INTO interests (interest, description) VALUES
 ('Visual', 'Interest in visual arts and aesthetics'),
 ('Water Sport', 'Interest in water-based sports and aquatic activities');
 
--- INSERT INTO events (event_name, description, location, event_time, image_filename, society_id) VALUES
+
 -- ('ABACUS Event', 'Description for ABACUS Event', 'Location for ABACUS', '2024-04-15 18:00:00', 'abacus-society.png', 1),
 -- ('Badminton Event', 'Description for Badminton Event', 'Location for Badminton', '2024-04-16 19:00:00', 'badminton-society.png', 2),
 -- ('Basketball Event', 'Description for Basketball Event', 'Location for Basketball', '2024-04-17 20:00:00', 'basketball-society.png', 3),
@@ -179,7 +186,7 @@ INSERT INTO interests (interest, description) VALUES
 -- ('Gin Event', 'Description for Gin Event', 'Location for Gin', '2024-05-01 10:00:00', 'gin-society.png', 17),
 -- ('Golf Event', 'Description for Golf Event', 'Location for Golf', '2024-05-02 11:00:00', 'golf-society.png', 18),
 -- ('Green Party Event', 'Description for Green Party Event', 'Location for Green Party', '2024-05-03 12:00:00', 'green-party-society.png', 19),
--- ('Hockey Event', 'Description for Hockey Event', 'Location for Hockey', '2024-05-04 13:00:00', 'http://localhost:5000/images/hockey-society.png', 20),
+
 -- ('Jiu Jitsu Event', 'Description for Jiu Jitsu Event', 'Location for Jiu Jitsu', '2024-05-05 14:00:00', 'jiu-jitsu-society.png', 21),
 -- ('Lacrosse Event', 'Description for Lacrosse Event', 'Location for Lacrosse', '2024-05-06 15:00:00', 'lacrosse-society.png', 22),
 -- ('Left Union Event', 'Description for Left Union Event', 'Location for Left Union', '2024-05-07 16:00:00', 'left-union-society.png', 23),
@@ -188,8 +195,7 @@ INSERT INTO interests (interest, description) VALUES
 -- ('Netball Event', 'Description for Netball Event', 'Location for Netball', '2024-05-10 19:00:00', 'netball-society.png', 26),
 -- ('Poker Event', 'Description for Poker Event', 'Location for Poker', '2024-05-11 20:00:00', 'poker-society.png', 27),
 -- ('Politics Event', 'Description for Politics Event', 'Location for Politics', '2024-05-12 21:00:00', 'politics-society.png', 28),
--- ('Powerlifting Event', 'Description for Powerlifting Event', 'Location for Powerlifting', '2024-05-13 22:00:00', 'http://localhost:5000/images/powerlifting-society-event-1.png', 29),
--- ('Rowing Event', 'Description for Rowing Event', 'Location for Rowing', '2024-05-14 23:00:00', 'http://localhost:5000/images/rowing-society.png', 30),
+
 -- ('Rugby Union Event', 'Description for Rugby Union Event', 'Location for Rugby Union', '2024-05-15 00:00:00', 'rugby-union-society.png', 31),
 -- ('Sailing Event', 'Description for Sailing Event', 'Location for Sailing', '2024-05-16 01:00:00', 'sailing-society.png', 32),
 -- ('Salsa Event', 'Description for Salsa Event', 'Location for Salsa', '2024-05-17 02:00:00', 'salsa-society.png', 33),

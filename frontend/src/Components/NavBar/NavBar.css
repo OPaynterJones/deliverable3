@@ -1,8 +1,14 @@
-.navBar {
-  box-sizing: border-box;
-  position: sticky;
+.navBar-container {
+  display: flex;
+  flex-direction: row;
   width: 100%;
-  height: auto;
+  padding: 8px;
+}
+
+.navBar {
+  position: sticky;
+  flex: 1;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
