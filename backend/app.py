@@ -871,14 +871,12 @@ def set_userinterest():
     cursor = mysql.connection.cursor()
 
     try:
-        # Create a set of existing interests for the user
         existing_interests_query = (
             "SELECT interest FROM userInterests WHERE user_id = %s"
         )
         cursor.execute(existing_interests_query, (user_id,))
         existing_interests = set(row[0] for row in cursor.fetchall())
 
-        # Insert new interests that aren't already present
         insert_query = "INSERT INTO userInterests (user_id, interest) VALUES (%s, %s)"
         for interest in interests:
             if interest not in existing_interests:

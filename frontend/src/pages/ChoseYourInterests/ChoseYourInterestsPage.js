@@ -3,9 +3,13 @@ import "./ChoseYourInterestsPage.css";
 import InterestGroup from "../../Components/InterestGroup/InterestGroup";
 import NavBar from "../../Components/NavBar/NavBar";
 import { setUserInterests } from "../../api/setAPI";
+import { useNavigate } from "react-router-dom";
 
 const ChooseYourInterestsPage = () => {
+  const navigate = useNavigate();
+
   const [selectedInterests, setSelectedInterests] = useState([]);
+  const [statusMessage, setStatusMessage] = useState(null);
 
   const handleSelectedInterestsChangeFromGroup = (
     interestName,
@@ -19,12 +23,14 @@ const ChooseYourInterestsPage = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("submitting", selectedInterests);
     try {
       const response = await setUserInterests(selectedInterests);
-      console.log(response.message);
+      setStatusMessage(response.message);
+      setTimeout(() => {
+        navigate("/for-you", { replace: "true" });
+      }, 1000);
     } catch (err) {
-      console.error(err);
+      setStatusMessage(err.message);
     }
   };
 
@@ -159,9 +165,12 @@ const ChooseYourInterestsPage = () => {
           </div>
         </div>
 
-        <button className="submit-button" onClick={handleSubmit}>
-          Confirm
-        </button>
+        <div>
+          <button className="submit-button" onClick={handleSubmit}>
+            Confirm
+          </button>
+        </div>
+        {statusMessage && <p className="status-message">{statusMessage}</p>}
       </div>
     </>
   );

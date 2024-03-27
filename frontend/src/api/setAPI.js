@@ -24,8 +24,8 @@ export const setUserInterests = async (interests) => {
     body: JSON.stringify({ interests }),
   });
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error);
+    const resp = await response.json();
+    throw new Error(resp.message);
   }
 
   const data = await response.json();
