@@ -17,18 +17,19 @@ function SocietyPage() {
     const fetchData = async () => {
       const societyDetails = await getSociety(society_name);
       setSocietyDetails(societyDetails);
-
-      if (societyDetails && societyDetails.society_id) {
-        const response = await checkSession(societyDetails.society_id);
-        setEditPermissions(response.hasEditPermissions);
-      }
+      try {
+        if (societyDetails && societyDetails.society_id) {
+          const response = await checkSession(societyDetails.society_id);
+          setEditPermissions(response.hasEditPermissions);
+        }
+      } catch {}
     };
 
     fetchData();
   }, [society_name]);
 
   useEffect(() => {
-    if (isEditing || !societyDetails) return; 
+    if (isEditing || !societyDetails) return;
 
     const updatedSocietyDetails = { ...societyDetails };
     const editableDivs = document.querySelectorAll(

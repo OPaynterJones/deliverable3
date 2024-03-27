@@ -1,0 +1,57 @@
+.event-card-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 40%;
+}
+
+.event-card {
+  min-height: 0;
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: stretch;
+  padding: 1rem;
+  border-radius: 8px;
+  color: white;
+  transition: transform 0.6s ease-in-out, color 2s ease;
+}
+
+.event-title {
+  font-size: 1.2rem;
+  margin-top: 0.75vh;
+  margin: 1vh;
+  font-weight: bold;
+  z-index: 2;
+  text-align: center;
+}
+
+.event-image {
+  object-fit: cover;
+  overflow: hidden;
+  max-width: 100%;
+  max-height: 40%;
+  border-radius: 8px;
+  background-position: center;
+  transition: opacity 0.6s ease;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  padding: 1rem;
+  align-items: center;
+  transition: color 0.6s ease;
+}
+
+.event-description {
+  max-width: 100%;
+  flex: 1;
+  min-height: 0;
+  max-width: 100%;
+  padding: 0.2rem;
+  overflow-y: auto
+}

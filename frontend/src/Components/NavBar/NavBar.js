@@ -20,15 +20,17 @@ const NavBar = ({ title }) => {
   };
 
   return (
-    <nav className="navBar">
-      <div className="app-name">Society Matchmaker</div>
-      <h1 className="title">{title}</h1>
-      <div className="links">
-        <a href="#">Find your events</a>
-        <a href="#">Profile</a>
-        <button onClick={handleLogout}>Logout</button>
-      </div>
-    </nav>
+    <div className="navBar-container">
+      <nav className="navBar">
+        <div className="app-name">Society Matchmaker</div>
+        <h1 className="title">{title}</h1>
+        <div className="links">
+          <a href="#">Find your events</a>
+          <a href="#">Profile</a>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      </nav>
+    </div>
   );
 };
 
