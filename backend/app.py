@@ -67,6 +67,8 @@ def get_user_name():
 
 # create new user set username, password, name to table users
 import random
+
+
 @app.route("/create_user", methods=["POST"])
 def set_user_data():
     if not request.is_json:
@@ -78,34 +80,45 @@ def set_user_data():
     name = request_data.get("name")
 
     if not username or not password or not name:
-        return jsonify({"message": "Username, password, and name are required fields"}), 400
+        return (
+            jsonify({"message": "Username, password, and name are required fields"}),
+            400,
+        )
 
     try:
         cursor = mysql.connection.cursor()
 
         # Insert user into users table
-        cursor.execute("INSERT INTO users (username, password, name) VALUES (%s, %s, %s)",
-                       (username, password, name))
-        
+        cursor.execute(
+            "INSERT INTO users (username, password, name) VALUES (%s, %s, %s)",
+            (username, password, name),
+        )
+
         # Fetch all interests from the interests table
         cursor.execute("SELECT interest FROM interests")
         interests = cursor.fetchall()
-        
+
         # Assign a random interest scale for each interest
         for interest in interests:
             scale = random.choice([3, 8])  # Randomly choose between 3 and 8
             cursor.execute(
                 "INSERT INTO userInterests (user_id, interest, scale) VALUES (LAST_INSERT_ID(), %s, %s)",
-                (interest[0], scale)
+                (interest[0], scale),
             )
 
         mysql.connection.commit()
         cursor.close()
         return jsonify({"message": "User added successfully"}), 200
     except Exception as e:
-        return jsonify({"message": "An error occurred while processing the request",
-                        "error": str(e)}), 500
-
+        return (
+            jsonify(
+                {
+                    "message": "An error occurred while processing the request",
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
 
 # set updated user password by user_id
@@ -729,39 +742,6 @@ def return_tables():
     return str(data)
 
 
-@app.route(
-    "/set_uinterest", methods=["GET", "POST"]
-)  # its /set_uinterest?user_id=...&interest=....&scale=...
-def set_userinterest():
-    user_id = request.args.get("user_id")  # need to change to form
-    interest = request.args.get("interest")
-    scale = request.args.get("scale")
-
-    if not user_id:
-        return "missing user id"
-    if not interest:
-        return "missing interest"
-    if not scale:
-        return "missing scale"
-
-    cur = mysql.connection.cursor()
-    # original value (just for testing)
-    cur.execute(
-        "SELECT scale FROM userInterests WHERE user_id = %s AND interest = %s;",
-        (user_id, interest),
-    )
-    old_scale = cur.fetchone()
-    # update
-    cur.execute(
-        "UPDATE userInterests SET scale = %s WHERE user_id = %s AND interest = %s;",
-        (scale, user_id, interest),
-    )
-    mysql.connection.commit()  # commit changes
-    cur.close()
-
-    return f"Interest changed for user {user_id}: {interest} {old_scale[0]} -> {scale}"
-
-
 # ----------------------------------
 
 
@@ -859,7 +839,7 @@ def check_session():
         return jsonify({"message": "Not authorised: no session token"}), 401
 
     if not validate_session_token(session_token):
-        return jsonify({"message": "Not authorised: bad session token"}), 401
+        return jsonify({"message": "Not authorised: bad session token"}), 403
 
     data = request.get_json()
     society_id = data.get("society_id")
@@ -867,6 +847,78 @@ def check_session():
         return jsonify({"message": "Authorised", "has_edit_permissions": True}), 200
 
     return jsonify({"message": "Authorised"}), 200
+
+
+@app.route("/add_interests", methods=["POST"])
+def set_userinterest():
+    session_token = request.cookies.get("session_token")
+
+    app.logger.debug(session_token)
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 403
+
+    user_id = get_user_id(session_token)
+
+    data = request.get_json()
+    interests = request.json.get("interests", [])
+
+    if not interests:
+        return jsonify({"message": "No interests provided"}), 400
+
+    cursor = mysql.connection.cursor()
+
+    try:
+        existing_interests_query = (
+            "SELECT interest FROM userInterests WHERE user_id = %s"
+        )
+        cursor.execute(existing_interests_query, (user_id,))
+        existing_interests = set(row[0] for row in cursor.fetchall())
+
+        insert_query = "INSERT INTO userInterests (user_id, interest) VALUES (%s, %s)"
+        for interest in interests:
+            if interest not in existing_interests:
+                cursor.execute(insert_query, (user_id, interest))
+
+        mysql.connection.commit()
+        return jsonify({"message": "Interests added successfully"}), 201
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({"message": "Internal server error"}), 500
+
+
+@app.route("/has_interests", methods=["POST"])
+def check_has_interests():
+    session_token = request.cookies.get("session_token")
+
+    app.logger.debug(session_token)
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 403
+
+    user_id = get_user_id(session_token)
+
+    cursor = mysql.connection.cursor()
+
+    try:
+        existing_interests_query = (
+            "SELECT interest FROM userInterests WHERE user_id = %s"
+        )
+        cursor.execute(existing_interests_query, (user_id,))
+        existing_interests = set(row[0] for row in cursor.fetchall())
+        cursor.close()
+
+        if existing_interests:
+            return jsonify({"message": "User has chosen their interests"}), 200
+        
+        return jsonify({"message": "User has not chosen their interests"}), 404
+
+    except Exception as e:
+        return jsonify({"message": "Internal server error"}), 500
 
 
 @app.route("/recommend_event", methods=["GET"])
@@ -951,7 +1003,7 @@ def update_society_details():
         return jsonify({"message": "Not authorised: no session token"}), 401
 
     if not validate_session_token(session_token):
-        return jsonify({"message": "Not authorised: bad session token"}), 401
+        return jsonify({"message": "Not authorised: bad session token"}), 403
 
     payload = request.get_json()
 
