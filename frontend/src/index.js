@@ -11,9 +11,9 @@ import {
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
-import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChoseYourInterestsPage";
+import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChooseYourInterestsPage";
 import "./global-styles.css";
-import { checkSession } from "./api/authAPI";
+import { checkSession, checkHasInterests } from "./api/authAPI";
 
 // ------------- STYLING -------------
 function BodyStyleManager() {
@@ -53,6 +53,27 @@ const RequireAuth = () => {
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
+
+const RequireInterests = () => {
+  const [hasInterests, setHasInterests] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const userHasInterests = async () => {
+      await checkHasInterests().then(setHasInterests);
+      setIsLoading(false);
+    };
+
+    userHasInterests();
+  }, []);
+
+  if (isLoading) {
+    return <div></div>;
+  }
+
+  return hasInterests ? <Outlet /> : <Navigate to="/choose-your-interests" />;
+};
+
 // ------------- MAIN ROUTING -------------
 const App = () => (
   <BrowserRouter>
@@ -60,12 +81,14 @@ const App = () => (
       <Route path="/" element={<Navigate to="/for-you" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/societies/:society_name" element={<SocietyPage />} />
-      <Route
-        path="/chose-your-interests"
-        element={<ChooseYourInterestsPage />}
-      />
       <Route element={<RequireAuth />}>
-        <Route path="/for-you" element={<ForYouPage />} />
+        <Route
+          path="/choose-your-interests"
+          element={<ChooseYourInterestsPage />}
+        />
+        <Route element={<RequireInterests />}>
+          <Route path="/for-you" element={<ForYouPage />} />
+        </Route>
       </Route>
     </Routes>
     <BodyStyleManager />

@@ -839,7 +839,7 @@ def check_session():
         return jsonify({"message": "Not authorised: no session token"}), 401
 
     if not validate_session_token(session_token):
-        return jsonify({"message": "Not authorised: bad session token"}), 401
+        return jsonify({"message": "Not authorised: bad session token"}), 403
 
     data = request.get_json()
     society_id = data.get("society_id")
@@ -858,7 +858,7 @@ def set_userinterest():
         return jsonify({"message": "Not authorised: no session token"}), 401
 
     if not validate_session_token(session_token):
-        return jsonify({"message": "Not authorised: bad session token"}), 401
+        return jsonify({"message": "Not authorised: bad session token"}), 403
 
     user_id = get_user_id(session_token)
 
@@ -885,8 +885,39 @@ def set_userinterest():
         mysql.connection.commit()
         return jsonify({"message": "Interests added successfully"}), 201
     except Exception as e:
-        print(f"Error updating interests: {e}")
         mysql.connection.rollback()
+        return jsonify({"message": "Internal server error"}), 500
+
+
+@app.route("/has_interests", methods=["POST"])
+def check_has_interests():
+    session_token = request.cookies.get("session_token")
+
+    app.logger.debug(session_token)
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 403
+
+    user_id = get_user_id(session_token)
+
+    cursor = mysql.connection.cursor()
+
+    try:
+        existing_interests_query = (
+            "SELECT interest FROM userInterests WHERE user_id = %s"
+        )
+        cursor.execute(existing_interests_query, (user_id,))
+        existing_interests = set(row[0] for row in cursor.fetchall())
+        cursor.close()
+
+        if existing_interests:
+            return jsonify({"message": "User has chosen their interests"}), 200
+        
+        return jsonify({"message": "User has not chosen their interests"}), 404
+
+    except Exception as e:
         return jsonify({"message": "Internal server error"}), 500
 
 
@@ -972,7 +1003,7 @@ def update_society_details():
         return jsonify({"message": "Not authorised: no session token"}), 401
 
     if not validate_session_token(session_token):
-        return jsonify({"message": "Not authorised: bad session token"}), 401
+        return jsonify({"message": "Not authorised: bad session token"}), 403
 
     payload = request.get_json()
 
