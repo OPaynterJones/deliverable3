@@ -22,9 +22,13 @@ const LoginPage = () => {
   // check if user is logged in when page is mounted
   useEffect(() => {
     const checkLoggedIn = async () => {
-      const response = await checkSession();
-      console.log(response);
-      setAuthenticated(response.sessionValid);
+      try {
+        const response = await checkSession();
+        console.log(response);
+        setAuthenticated(response.sessionValid);
+      } catch (err) {
+        console.log(err);
+      }
     };
     checkLoggedIn();
   }, []);
@@ -84,91 +88,97 @@ const LoginPage = () => {
   }, [isCommitteeMember]);
 
   return (
-    <div
-      className="login-container"
-      style={{ height: isCreateAccount ? "25rem" : "21rem" }}
-    >
-      <h2 className="login-title">Sign in </h2>{" "}
-      <h2 className="login-subtitle"> or create your account</h2>
-      <form onSubmit={handleSubmit} className="login-form">
-        <InputField
-          type="email"
-          fieldToAskFor="University Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <InputField
-          type="password"
-          fieldToAskFor="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {isCreateAccount && (
+    setAuthenticated && (
+      <div
+        className="login-container"
+        style={{ height: isCreateAccount ? "25rem" : "21rem" }}
+      >
+        <h2 className="login-title">Sign in </h2>{" "}
+        <h2 className="login-subtitle"> or create your account</h2>
+        <form onSubmit={handleSubmit} className="login-form">
           <InputField
-            className="confirm-password-field"
-            type="password"
-            doc
-            fieldToAskFor="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            type="email"
+            fieldToAskFor="University Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-        )}
-        <div className="additional-login-info">
-          <div className="button-container">
-            <button
-              type="button"
-              className="create-account-button"
-              onClick={() => {
-                setStatusMessage(null);
-                setIsCreateAccount(!isCreateAccount);
-              }}
-            >
-              {isCreateAccount ? "Back to Login" : "Create New Account"}
-            </button>
-            <button
-              type="submit"
-              className="login-create-button"
-              style={{ width: isCreateAccount ? "10rem" : "6rem" }}
-            >
-              <span style={{ opacity: isCreateAccount ? 0 : 1 }}>Login</span>
-              <span style={{ opacity: isCreateAccount ? 1 : 0 }}>
-                Create Account
-              </span>
-            </button>
-          </div>
+          <InputField
+            type="password"
+            fieldToAskFor="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           {isCreateAccount && (
-            <>
-              <div className="committee-member-checkbox">
-                <label htmlFor="committee-member">I'm a committee member</label>
-                <input
-                  type="checkbox"
-                  id="committee-member"
-                  value={isCommitteeMember}
-                  onChange={(e) => setIsCommitteeMember(e.target.checked)}
-                />
-              </div>
-              {isCommitteeMember && (
-                <select className="society-dropdown">
-                  <option value="" disabled>
-                    Select Society
-                  </option>
-                  {societies.map((societyName) => (
-                    <option
-                      key={societyName}
-                      value={societyName}
-                      className="dropdown-option"
-                    >
-                      {societyName}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </>
+            <InputField
+              className="confirm-password-field"
+              type="password"
+              doc
+              fieldToAskFor="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
           )}
-          {statusMessage && <p className="success-message">{statusMessage}</p>}
-        </div>
-      </form>
-    </div>
+          <div className="additional-login-info">
+            <div className="button-container">
+              <button
+                type="button"
+                className="create-account-button"
+                onClick={() => {
+                  setStatusMessage(null);
+                  setIsCreateAccount(!isCreateAccount);
+                }}
+              >
+                {isCreateAccount ? "Back to Login" : "Create New Account"}
+              </button>
+              <button
+                type="submit"
+                className="login-create-button"
+                style={{ width: isCreateAccount ? "10rem" : "6rem" }}
+              >
+                <span style={{ opacity: isCreateAccount ? 0 : 1 }}>Login</span>
+                <span style={{ opacity: isCreateAccount ? 1 : 0 }}>
+                  Create Account
+                </span>
+              </button>
+            </div>
+            {isCreateAccount && (
+              <>
+                <div className="committee-member-checkbox">
+                  <label htmlFor="committee-member">
+                    I'm a committee member
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="committee-member"
+                    value={isCommitteeMember}
+                    onChange={(e) => setIsCommitteeMember(e.target.checked)}
+                  />
+                </div>
+                {isCommitteeMember && (
+                  <select className="society-dropdown">
+                    <option value="" disabled>
+                      Select Society
+                    </option>
+                    {societies.map((societyName) => (
+                      <option
+                        key={societyName}
+                        value={societyName}
+                        className="dropdown-option"
+                      >
+                        {societyName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </>
+            )}
+            {statusMessage && (
+              <p className="success-message">{statusMessage}</p>
+            )}
+          </div>
+        </form>
+      </div>
+    )
   );
 };
 

@@ -39,8 +39,13 @@ const RequireAuth = () => {
 
   useEffect(() => {
     const checkLoggedIn = async () => {
-      const response = await checkSession();
-      setIsAuthenticated(response.sessionValid);
+      try {
+        const response = await checkSession();
+        setIsAuthenticated(response.sessionValid);
+        console.log(isAuthenticated);
+      } catch (err) {
+        console.log(err);
+      }
       setIsLoading(false);
     };
 
