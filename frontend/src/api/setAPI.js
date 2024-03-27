@@ -9,7 +9,25 @@ export const updateInformation = async (url, data) => {
   });
 
   if (!response.ok) {
-    console.log(await response.json())
+    console.log(await response.json());
     throw new Error("Failed to update information");
   }
+};
+
+export const setUserInterests = async (interests) => {
+  const response = await fetch("http://localhost:5000/add_interests", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ interests }),
+  });
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error);
+  }
+
+  const data = await response.json();
+  return data;
 };

@@ -2,13 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./ChoseYourInterestsPage.css";
 import InterestGroup from "../../Components/InterestGroup/InterestGroup";
 import NavBar from "../../Components/NavBar/NavBar";
+import { setUserInterests } from "../../api/setAPI";
 
 const ChooseYourInterestsPage = () => {
   const [selectedInterests, setSelectedInterests] = useState([]);
-
-  useEffect(() => {
-    console.log("testing higher up", selectedInterests);
-  }, [selectedInterests]); // logger listener
 
   const handleSelectedInterestsChangeFromGroup = (
     interestName,
@@ -21,8 +18,14 @@ const ChooseYourInterestsPage = () => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("submitting", selectedInterests);
+    try {
+      const response = await setUserInterests(selectedInterests);
+      console.log(response.message);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

@@ -36,7 +36,7 @@ CREATE TABLE `interests` (
 CREATE TABLE `userInterests` (
    `user_id` BIGINT UNSIGNED NOT NULL,
    `interest` VARCHAR(255) NOT NULL,
-   `scale` TINYINT NOT NULL,
+   `scale` TINYINT NOT NULL DEFAULT 3,
    PRIMARY KEY (`user_id`, `interest`),
    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`),
    FOREIGN KEY (`interest`) REFERENCES `interests`(`interest`)
