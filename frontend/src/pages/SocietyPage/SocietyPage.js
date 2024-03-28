@@ -13,6 +13,7 @@ function SocietyPage() {
 
   const [isEditing, setIsEditing] = useState(false);
 
+
   useEffect(() => {
     const fetchData = async () => {
       const societyDetails = await getSociety(society_name);
@@ -59,23 +60,14 @@ function SocietyPage() {
             />
           )}
           {hasEditPermissions && (
-            <>
-              {isEditing ? (
-                <button
-                  className="edit-button"
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  Save
-                </button>
-              ) : (
-                <button
-                  className="edit-button"
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  Edit Society
-                </button>
-              )}
-            </>
+            <div className="button-container">
+              <button
+                className="edit-button"
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                {isEditing ? "Save" : "Edit"}
+              </button>
+            </div>
           )}
           <div className="society-container">
             <div className="society-name">

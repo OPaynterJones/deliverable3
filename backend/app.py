@@ -1,3 +1,5 @@
+import os
+import string
 import sys
 
 import numpy as np
@@ -841,12 +843,36 @@ def check_session():
     if not validate_session_token(session_token):
         return jsonify({"message": "Not authorised: bad session token"}), 403
 
+    user_id = get_user_id(session_token)
+
+    # Fetch society name from userSocieties
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """SELECT s.name AS society_name FROM societies s 
+    JOIN userSocieties us ON us.society_id = s.society_id 
+        WHERE us.user_id = %s AND us.role = 'commitee'""",
+        (user_id,),
+    )
+    result = cur.fetchone()
+    app.logger.debug(result)
+    society_name = result[0] if result else None
+    cur.close()
+
     data = request.get_json()
     society_id = data.get("society_id")
-    if has_edit_permissions(get_user_id(session_token), society_id):
-        return jsonify({"message": "Authorised", "has_edit_permissions": True}), 200
+    if has_edit_permissions(user_id, society_id):
+        return (
+            jsonify(
+                {
+                    "message": "Authorised",
+                    "has_edit_permissions": True,
+                    "society_name": society_name,
+                }
+            ),
+            200,
+        )
 
-    return jsonify({"message": "Authorised"}), 200
+    return jsonify({"message": "Authorised", "society_name": society_name}), 200
 
 
 @app.route("/logout", methods=["POST"])
@@ -965,7 +991,7 @@ def get_recommended_event():
                 "location": event[3],
                 "time": event[4],
                 "image_url": event[5],  # Construct image URL
-                "society": "Powerlifting",
+                "society": event[6],
             }
             return jsonify(event_data), 200
         else:
@@ -1043,6 +1069,46 @@ def update_society_details():
         return jsonify({"message": f"Invalid request data"}), 400
 
 
+@app.route("/create_new_event", methods=["POST"])
+def create_event():
+    # Extract data from request
+    data = request.form.to_dict()
+
+    image = request.files.get("image")
+    image_path = os.path.join(
+        "images", image.filename
+    )
+    image.save(image_path)
+
+    sql = """
+        INSERT INTO events (event_name, description, location, event_time, image_filename, society_id)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    society_id = get_society_id(data["society_name"])
+
+    data = (
+        data["event_name"],
+        data["description"],
+        data["location"],
+        data["event_time"],
+        image_path,
+        society_id,
+    )
+
+    app.logger.debug(data)
+
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute(sql, data)
+        mysql.connection.commit()
+    except Exception as e:
+        mysql.connection.rollback()
+        print(f"Error creating event: {e}")
+        return jsonify({"error": "Failed to create event"}), 500
+
+    return jsonify({"message": "Event created successfully!"}), 201
+
+
 # ------------------- UTIL FUNCTIONS ------------------------
 
 
@@ -1107,6 +1173,11 @@ def has_edit_permissions(user_id, society_id):
     if result:
         return True
     return False
+
+
+def generate_random_filename(length=10):
+    letters_and_digits = string.ascii_letters + string.digits
+    return "".join(random.choice(letters_and_digits) for _ in range(length))
 
 
 if __name__ == "__main__":

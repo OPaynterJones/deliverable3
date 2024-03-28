@@ -86,13 +86,23 @@
   height: auto;
 }
 
-.edit-button {
+.button-container {
   position: absolute;
   bottom: 4vh;
   right: 2vw;
-  border: 0px;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  align-items: flex-end;
+}
+
+.button-container button {
+  margin: 0.5rem;
+  width: fit-content;
+  border: 0px transparent;
   background-color: white;
   color: var(--text-primary);
   border-radius: 8px;
   padding: 0.5rem;
+
 }

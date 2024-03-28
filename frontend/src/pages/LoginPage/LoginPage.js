@@ -119,7 +119,7 @@ const LoginPage = () => {
             />
           )}
           <div className="additional-login-info">
-            <div className="button-container">
+            <div className="button-container1">
               <button
                 type="button"
                 className="create-account-button"
