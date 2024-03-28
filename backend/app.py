@@ -849,6 +849,28 @@ def check_session():
     return jsonify({"message": "Authorised"}), 200
 
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    session_token = request.cookies.get("session_token")
+
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 403
+
+    user_id = get_user_id(session_token)
+
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM sessions WHERE session_token = %s", (session_token,))
+    mysql.connection.commit()
+    cur.close()
+
+    response = make_response("", 204)
+    response.delete_cookie("session_token")
+    return response
+
+
 @app.route("/add_interests", methods=["POST"])
 def set_userinterest():
     session_token = request.cookies.get("session_token")
@@ -914,7 +936,7 @@ def check_has_interests():
 
         if existing_interests:
             return jsonify({"message": "User has chosen their interests"}), 200
-        
+
         return jsonify({"message": "User has not chosen their interests"}), 404
 
     except Exception as e:
@@ -943,7 +965,7 @@ def get_recommended_event():
                 "location": event[3],
                 "time": event[4],
                 "image_url": event[5],  # Construct image URL
-                "society_id": event[6],
+                "society": "Powerlifting",
             }
             return jsonify(event_data), 200
         else:
