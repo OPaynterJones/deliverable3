@@ -1,5 +1,6 @@
 import React from "react";
 import "./NavBar.css";
+import { NavLink } from "react-router-dom";
 
 const NavBar = ({ title }) => {
   const handleLogout = async () => {
@@ -21,7 +22,7 @@ const NavBar = ({ title }) => {
         <div className="app-name">Society Matchmaker</div>
         <h1 className="title">{title}</h1>
         <div className="links">
-          <a href="#">Add interests</a>
+          <NavLink to="/choose-your-interests">Add interests</NavLink>
           <button onClick={handleLogout}>Logout</button>
         </div>
       </nav>

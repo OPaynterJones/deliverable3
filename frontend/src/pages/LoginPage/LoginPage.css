@@ -53,7 +53,8 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  margin: 20px 0px;
+  margin-top: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .login-create-button {
