@@ -1,22 +1,19 @@
 import React from "react";
 import "./NavBar.css";
+import { NavLink } from "react-router-dom";
 
 const NavBar = ({ title }) => {
   const handleLogout = async () => {
-    try {
-      const response = await fetch("/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+    const response = await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-      if (response.status === 200) {
-        window.location.reload();
-      } else {
-        console.error("Error logging out:", await response.text());
-      }
-    } catch (error) {
-      console.error("Error logging out:", error);
+    if (!response.ok) {
+      console.log(await response.json());
     }
+
+    window.location.reload();
   };
 
   return (
@@ -25,8 +22,7 @@ const NavBar = ({ title }) => {
         <div className="app-name">Society Matchmaker</div>
         <h1 className="title">{title}</h1>
         <div className="links">
-          <a href="#">Find your events</a>
-          <a href="#">Profile</a>
+          <NavLink to="/choose-your-interests">Add interests</NavLink>
           <button onClick={handleLogout}>Logout</button>
         </div>
       </nav>

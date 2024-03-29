@@ -17,7 +17,7 @@ export const checkSession = async (society_id = null) => {
   }
 
   const data = await response.json();
-  return { sessionValid: true, hasEditPermissions: data.has_edit_permissions };
+  return { sessionValid: true, hasEditPermissions: data.has_edit_permissions, societyName: data.society_name};
 };
 
 export const checkHasInterests = async () => {

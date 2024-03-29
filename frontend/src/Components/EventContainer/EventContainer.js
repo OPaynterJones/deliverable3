@@ -5,7 +5,7 @@ import {
   BsHandThumbsDownFill,
   BsArrowRepeat,
 } from "react-icons/bs";
-
+import { useNavigate } from "react-router-dom";
 import "./EventContainer.css";
 
 const darkenColor = (color, amount) => {
@@ -54,6 +54,7 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
   const [timerRunning, setTimerRunning] = useState(false);
   const [eventData, setEventData] = useState(null);
   const dominantColor = useDominantColor(incomingData?.image_url);
+  const navigate = useNavigate();
 
   const [animation, setAnimation] = useState("intial");
 
@@ -79,56 +80,81 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
   }, [timerRunning]);
 
   useEffect(() => {
-    console.log("change in event data:", incomingData);
     if (timerRunning) return;
 
     setEventData(incomingData);
     setAnimation("initial");
   }, [timerRunning, incomingData]);
 
+  const goToSocietyPage = () => {
+    if (eventData?.society) {
+      navigate(`/societies/${eventData.society}`);
+    }
+  };
+
   return (
-    <div className="event-card-container">
-      <div
-        className="event-card"
-        style={{
-          backgroundColor: dominantColor,
-          transform: `${
-            animation === "out-left"
-              ? "translateX(-100px)"
-              : animation === "out-right"
-              ? "translateX(100px)"
-              : "translateX(0)"
-          }`,
-        }}
-      >
-        <p className="event-title">{eventData?.title}</p>
-        <img
-          className="event-image"
-          src={eventData?.image_url || ""}
-          alt={eventData?.title || "No Title Available"}
-          style={{
-            opacity: animation !== "initial" ? 0.15 : 1,
-          }}
-        />
+    <>
+      <div className="event-card-container">
         <div
-          className="buttons"
-          style={{ color: darkenColor(dominantColor, -0.85) }}
+          className="event-card"
+          style={{
+            backgroundColor: dominantColor,
+            transform: `${
+              animation === "out-left"
+                ? "translateX(-100px)"
+                : animation === "out-right"
+                ? "translateX(100px)"
+                : "translateX(0)"
+            }`,
+          }}
         >
-          <BsHandThumbsUpFill
-            size={65}
-            onClick={() => handleButtonClick("like")}
+          <p className="event-title">{eventData?.title}</p>
+          <img
+            className="event-image"
+            src={eventData?.image_url || ""}
+            alt={eventData?.title || "No Title Available"}
+            style={{
+              opacity: animation !== "initial" ? 0.15 : 1,
+            }}
           />
-          <BsArrowRepeat size={50} onClick={() => handleButtonClick("pass")} />
-          <BsHandThumbsDownFill
-            size={65}
-            onClick={() => handleButtonClick("dislike")}
-          />
-        </div>
-        <div className="event-description">
-          {eventData?.description || "No Description Available"}
+          <div
+            className="buttons"
+            style={{ color: darkenColor(dominantColor, -0.85) }}
+          >
+            <BsHandThumbsUpFill
+              size={65}
+              onClick={() => handleButtonClick("like")}
+            />
+            <BsArrowRepeat
+              size={50}
+              onClick={() => handleButtonClick("pass")}
+            />
+            <BsHandThumbsDownFill
+              size={65}
+              onClick={() => handleButtonClick("dislike")}
+            />
+          </div>
+          <div className="event-description">
+            {eventData?.description || "No Description Available"}
+          </div>
         </div>
       </div>
-    </div>
+      <div className="additional-information">
+        <div className="info-field">
+          <h2 className="society-name" onClick={goToSocietyPage}>
+            {eventData ? `${eventData.society} Society` : "Society Name"}
+          </h2>
+        </div>
+        <div className="info-field">
+          <p className="field-name">Time: </p>
+          <p className="field-info">{eventData?.time || "Time TBA"}</p>
+        </div>
+        <div className="info-field">
+          <p className="field-name">Location: </p>
+          <p className="field-info">{eventData?.location || "Location TBA"}</p>
+        </div>
+      </div>
+    </>
   );
 };
 

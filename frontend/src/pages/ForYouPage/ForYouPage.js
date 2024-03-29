@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./ForYouPage.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import EventContainer from "../../Components/EventContainer/EventContainer";
+import { useNavigate } from "react-router-dom";
+import { checkSession } from "../../api/authAPI";
+import BlankEvent from "../../Components/BlankEvent/BlankEvent";
 
 const getRecommendedEvent = async () => {
   try {
@@ -22,6 +25,21 @@ const getRecommendedEvent = async () => {
 const ForYouPage = () => {
   const [eventData, setEventData] = useState(null);
 
+  const [societyName, setSocietyName] = useState(null);
+  const [isCreatingNewEvent, setIsCreatingNewEvent] = useState(false);
+  const [newEventData, setNewEventData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await checkSession();
+        setSocietyName(response.societyName);
+      } catch {}
+    };
+
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,34 +55,69 @@ const ForYouPage = () => {
 
   const handleResponse = (action) => {
     getRecommendedEvent().then(setEventData);
-    //   .then((data) => {
-    //     setEventData(data);
-    //     setImageAnimation("initial");
-    //   })
-    //   .catch((error) => console.error("Error fetching random event:", error));
   };
+
+  useEffect(() => {
+    if (!newEventData || isCreatingNewEvent) return;
+
+    const handleSaveEvent = async () => {
+      try {
+        const formData = new FormData();
+        Object.keys({ ...newEventData, societyName }).forEach((key) => {
+          console.log(key);
+        });
+        Object.keys({ ...newEventData }).forEach((key) => {
+          console.log(key, newEventData[key]);
+          formData.append(key, newEventData[key]);
+        });
+
+        formData.append("society_name", societyName);
+        const response = await fetch("http://localhost:5000/create_new_event", {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+          enctype: "multipart/form-data",
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        console.log("Event saved successfully!");
+        setIsCreatingNewEvent(false);
+      } catch (error) {
+        console.error("Error saving event:", error);
+      }
+      setNewEventData(null);
+    };
+
+    handleSaveEvent();
+  }, [isCreatingNewEvent]);
 
   return (
     <>
       <div className="for-you-page">
         <NavBar />
         <div className="page-content">
-          <EventContainer
-            incomingData={eventData}
-            handleResponse={handleResponse}
-          />
-          <div className="additional-information">
-            <div className="info-field">
-              <p className="field-name">Time: </p>
-              <p className="field-info">{eventData?.time || "Time TBA"}</p>
-            </div>
-            <div className="info-field">
-              <p className="field-name">Location: </p>
-              <p className="field-info">
-                {eventData?.location || "Location TBA"}
-              </p>
-            </div>
-          </div>
+          {isCreatingNewEvent ? (
+            <BlankEvent
+              handleEventDataChange={setNewEventData}
+              societyName={societyName}
+            />
+          ) : (
+            <EventContainer
+              incomingData={eventData}
+              handleResponse={handleResponse}
+            />
+          )}
+          {societyName && (
+            <button
+              className="create-new-event-button"
+              onClick={() => setIsCreatingNewEvent(!isCreatingNewEvent)}
+            >
+              {isCreatingNewEvent ? "Save event" : "Create new event"}
+            </button>
+          )}
         </div>
       </div>
     </>

@@ -91,7 +91,7 @@ const LoginPage = () => {
     setAuthenticated && (
       <div
         className="login-container"
-        style={{ height: isCreateAccount ? "25rem" : "21rem" }}
+        style={{ height: isCreateAccount ? "26rem" : "21rem" }}
       >
         <h2 className="login-title">Sign in </h2>{" "}
         <h2 className="login-subtitle"> or create your account</h2>
@@ -119,7 +119,7 @@ const LoginPage = () => {
             />
           )}
           <div className="additional-login-info">
-            <div className="button-container">
+            <div className="button-container1">
               <button
                 type="button"
                 className="create-account-button"
