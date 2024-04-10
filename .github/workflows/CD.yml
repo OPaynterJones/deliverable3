@@ -1,4 +1,4 @@
-name: Build and Push Docker images
+name: CD
 
 on:
   push:
@@ -23,3 +23,19 @@ jobs:
 
     - name: Push Docker images
       run: docker compose push
+      
+    - name: SSH and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DROPLET_IP }}
+        username: ${{ secrets.DROPLET_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /root/deliverable3
+          docker compose down -v
+          docker rm $(docker ps -a -q)
+          git pull
+          docker-compose pull
+          docker-compose up
+
+
