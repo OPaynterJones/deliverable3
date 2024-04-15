@@ -1,5 +1,5 @@
 export const fetchSocieties = async () => {
-  const response = await fetch("http://localhost:5000/societies", {
+  const response = await fetch(`http://${window.location.hostname}:5000/societies`, {
     method: "GET",
   });
 
@@ -13,7 +13,7 @@ export const fetchSocieties = async () => {
 
 export const getSociety = async (society_name) => {
   const response = await fetch(
-    `http://localhost:5000/societies/${society_name}`
+    `http://${window.location.hostname}:5000/societies/${society_name}`
   );
   const data = await response.json();
   return data;

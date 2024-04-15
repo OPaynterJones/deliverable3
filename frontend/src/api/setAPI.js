@@ -15,7 +15,7 @@ export const updateInformation = async (url, data) => {
 };
 
 export const setUserInterests = async (interests) => {
-  const response = await fetch("http://localhost:5000/add_interests", {
+  const response = await fetch(`http://${window.location.hostname}:5000/add_interests`, {
     method: "POST",
     credentials: "include",
     headers: {

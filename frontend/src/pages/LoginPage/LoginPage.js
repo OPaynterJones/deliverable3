@@ -51,8 +51,8 @@ const LoginPage = () => {
       }
       const response = await fetch(
         isCreateAccount
-          ? "http://localhost:5000/register"
-          : "http://localhost:5000/login",
+          ? `http://${window.location.hostname}:5000/register`
+          : `http://${window.location.hostname}:5000/login`,
         {
           method: "POST",
           headers: {

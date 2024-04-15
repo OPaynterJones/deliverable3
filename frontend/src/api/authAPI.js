@@ -1,5 +1,5 @@
 export const checkSession = async (society_id = null) => {
-  const response = await fetch("http://localhost:5000/check_session", {
+  const response = await fetch(`http://${window.location.hostname}:5000/check_session`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -21,7 +21,7 @@ export const checkSession = async (society_id = null) => {
 };
 
 export const checkHasInterests = async () => {
-  const response = await fetch("http://localhost:5000/has_interests", {
+  const response = await fetch(`http://${window.location.hostname}:5000/has_interests`, {
     method: "POST",
     credentials: "include",
   });

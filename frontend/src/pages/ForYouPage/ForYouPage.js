@@ -72,7 +72,7 @@ const ForYouPage = () => {
         });
 
         formData.append("society_name", societyName);
-        const response = await fetch("http://localhost:5000/create_new_event", {
+        const response = await fetch(`http://${window.location.hostname}:5000/create_new_event`, {
           method: "POST",
           credentials: "include",
           body: formData,
