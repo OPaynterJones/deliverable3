@@ -34,6 +34,7 @@ jobs:
           cd /root/deliverable3
           docker compose down -v
           docker rm $(docker ps -a -q)
+          git fetch
           git pull
           docker-compose pull
           docker-compose up
