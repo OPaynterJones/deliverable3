@@ -19,10 +19,10 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build Docker dev images
-      run: docker compose build
+      run: docker compose -f docker-compose-prod.yml build
 
     - name: Push Docker images
-      run: docker compose push
+      run: docker compose -f docker-compose-prod.yml push
       
     - name: SSH and deploy
       uses: appleboy/ssh-action@master
@@ -31,12 +31,8 @@ jobs:
         username: ${{ secrets.DROPLET_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /root/deliverable3
-          docker compose down -v
-          docker rm $(docker ps -a -q)
-          git fetch
-          git pull
-          docker compose pull
-          docker compose up -d
+          docker compose -f docker-compose-prod.yml down -v
+          docker compose -f docker-compose-prod.yml pull
+          docker compose -f docker-compose-prod.yml up
 
 
