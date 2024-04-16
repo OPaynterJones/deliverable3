@@ -42,7 +42,7 @@ function SocietyPage() {
       updatedSocietyDetails[key] = editableDiv.textContent.trim();
     }
 
-    updateInformation("http://localhost:5000/societies", updatedSocietyDetails);
+    updateInformation(`http://${window.location.hostname}:5000/societies`, updatedSocietyDetails);
     setSocietyDetails(updatedSocietyDetails);
   }, [isEditing]);
 
