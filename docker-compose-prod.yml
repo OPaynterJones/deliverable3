@@ -1,26 +1,33 @@
+name: deliverable3-prod
 services: 
   frontend:
+    container_name: frontend
+    image: morsultra/deliverable3:frontend-prod
     build:
       context: ./frontend
-      dockerfile: Dockerfile-prod
+      dockerfile: dockerfile.prod
     ports: 
       - "3000:3000"
     depends_on:
       - db
 
   backend: 
+    container_name: backend
+    image: morsultra/deliverable3:backend-prod
     build:
       context: ./backend
-      dockerfile: Dockerfile-prod
+      dockerfile: dockerfile.prod
     ports:
       - "5000:5000"
     depends_on: 
       - db
 
   db: 
+    container_name: db
+    image: morsultra/deliverable3:db-prod
     build: 
       context: ./database
-      dockerfile: Dockerfile-prod
+      dockerfile: dockerfile.prod
     environment: 
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
       MYSQL_DATABASE: deliverable3_testing_db

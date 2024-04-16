@@ -2,7 +2,7 @@ name: deliverable3-dev
 services: 
   frontend:
     container_name: frontend
-    image: morsultra/deliverable3:frontend
+    image: morsultra/deliverable3:frontend-dev
     build:
       context: ./frontend
       dockerfile: dockerfile.dev
@@ -18,7 +18,7 @@ services:
 
   backend: 
     container_name: backend
-    image: morsultra/deliverable3:backend
+    image: morsultra/deliverable3:backend-dev
     build: 
       context: ./backend
       dockerfile: dockerfile.dev
