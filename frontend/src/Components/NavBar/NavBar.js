@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 const NavBar = ({ title }) => {
   const handleLogout = async () => {
-    const response = await fetch("http://localhost:5000/logout", {
+    const response = await fetch(`http://${window.location.hostname}:5000/logout`, {
       method: "POST",
       credentials: "include",
     });
