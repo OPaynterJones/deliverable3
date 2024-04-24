@@ -4,6 +4,7 @@ import "./SocietyPage.css";
 import { getSociety } from "../../api/getAPI";
 import { checkSession } from "../../api/authAPI";
 import { updateInformation } from "../../api/setAPI";
+import { backendUrl } from "../../config";
 
 function SocietyPage() {
   const { society_name } = useParams();
@@ -42,7 +43,7 @@ function SocietyPage() {
       updatedSocietyDetails[key] = editableDiv.textContent.trim();
     }
 
-    updateInformation(`http://${window.location.hostname}:5000/societies`, updatedSocietyDetails);
+    updateInformation(`${backendUrl}/societies`, updatedSocietyDetails);
     setSocietyDetails(updatedSocietyDetails);
   }, [isEditing]);
 

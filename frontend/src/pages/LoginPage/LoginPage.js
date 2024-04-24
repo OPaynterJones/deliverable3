@@ -4,6 +4,7 @@ import "./LoginPage.css";
 import InputField from "../../Components/AnimtedInputField/InputField";
 import { fetchSocieties } from "../../api/getAPI";
 import { checkSession } from "../../api/authAPI";
+import { backendUrl } from "../../config";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -51,8 +52,8 @@ const LoginPage = () => {
       }
       const response = await fetch(
         isCreateAccount
-          ? `http://${window.location.hostname}:5000/register`
-          : `http://${window.location.hostname}:5000/login`,
+          ? `${backendUrl}/register`
+          : `${backendUrl}/login`,
         {
           method: "POST",
           headers: {

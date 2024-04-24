@@ -1,10 +1,11 @@
 import React from "react";
 import "./NavBar.css";
 import { NavLink } from "react-router-dom";
+import { backendUrl } from "../../config";
 
 const NavBar = ({ title }) => {
   const handleLogout = async () => {
-    const response = await fetch(`http://${window.location.hostname}:5000/logout`, {
+    const response = await fetch(`${backendUrl}/logout`, {
       method: "POST",
       credentials: "include",
     });
