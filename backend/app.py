@@ -379,6 +379,7 @@ def get_events():
     cursor.close()
     return jsonify(fetch_data)
 
+
 @app.route("/get_societies", methods=["GET"])
 def get_societies():
     cursor = mysql.connection.cursor()
@@ -386,6 +387,7 @@ def get_societies():
     fetch_data = cursor.fetchall()
     cursor.close()
     return jsonify(fetch_data)
+
 
 """ Interests Table """
 
@@ -769,7 +771,6 @@ def return_tables():
 @app.route("/login", methods=["POST"])
 def login():
     cookie = request.cookies.get("session_token")
-    app.logger.debug(f"Session token cookie: {cookie}")
 
     data = request.get_json()
     username = data["email"]
@@ -796,7 +797,6 @@ def login():
                 session_token = session_token_dict["session_token"]
             else:
                 session_token = str(uuid.uuid4())
-                app.logger.debug(f"Type of session UUID: {type(session_token)}")
                 cur.execute(
                     "INSERT INTO sessions (user_id, session_token) VALUES (%s, %s)",
                     (user_dict["user_id"], session_token),
@@ -873,7 +873,6 @@ def check_session():
         (user_id,),
     )
     result = cur.fetchone()
-    app.logger.debug(result)
     society_name = result[0] if result else None
     cur.close()
 
@@ -920,7 +919,6 @@ def logout():
 def set_userinterest():
     session_token = request.cookies.get("session_token")
 
-    app.logger.debug(session_token)
     if not session_token:
         return jsonify({"message": "Not authorised: no session token"}), 401
 
@@ -929,30 +927,54 @@ def set_userinterest():
 
     user_id = get_user_id(session_token)
 
-    data = request.get_json()
-    interests = request.json.get("interests", [])
+    selected_interests = request.json.get("interests", [])
 
-    if not interests:
+    if not selected_interests:
         return jsonify({"message": "No interests provided"}), 400
 
     cursor = mysql.connection.cursor()
 
     try:
+        get_interests_query = "SELECT interest FROM interests"
+        cursor.execute(get_interests_query)
+        all_interests = set(row[0] for row in cursor.fetchall())
+
         existing_interests_query = (
             "SELECT interest FROM userInterests WHERE user_id = %s"
         )
         cursor.execute(existing_interests_query, (user_id,))
         existing_interests = set(row[0] for row in cursor.fetchall())
 
-        insert_query = "INSERT INTO userInterests (user_id, interest) VALUES (%s, %s)"
-        for interest in interests:
-            if interest not in existing_interests:
-                cursor.execute(insert_query, (user_id, interest))
+        not_selected_interests = [
+            interest
+            for interest in all_interests
+            if interest not in selected_interests and interest not in existing_interests
+        ]
+
+        selected_interests = [
+            (interest, 8) for interest in selected_interests
+        ]  # override existing interests
+        not_existing_interests = [
+            (interest, 3) for interest in not_selected_interests
+        ]  # any interests that haven't been selected by the user, or already exist in the table should be set to default
+
+        app.logger.info(f"selected interests {selected_interests}")
+        app.logger.info(f"existing interests {existing_interests}")
+        app.logger.info(f"not_existing_interests {not_existing_interests}")
+
+        interests_to_update = selected_interests + not_existing_interests
+        interests_to_update = [(user_id, interest, scale) for interest, scale in interests_to_update]
+
+        insert_query = "INSERT INTO userInterests (user_id, interest, scale) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE scale = VALUES(scale)"
+        
+        cursor.executemany(insert_query, interests_to_update)
 
         mysql.connection.commit()
+
         return jsonify({"message": "Interests added successfully"}), 201
     except Exception as e:
         mysql.connection.rollback()
+        app.logger.info(e)
         return jsonify({"message": "Internal server error"}), 500
 
 
@@ -960,7 +982,6 @@ def set_userinterest():
 def check_has_interests():
     session_token = request.cookies.get("session_token")
 
-    app.logger.debug(session_token)
     if not session_token:
         return jsonify({"message": "Not authorised: no session token"}), 401
 
@@ -1006,6 +1027,8 @@ def get_recommended_event():
 
             society_id = event_data.get("society_id", None)
             if society_id:
+                app.logger.info("SOCIETY_NAME")
+                app.logger.info(get_society_name(society_id))
                 event_data["society_name"] = get_society_name(society_id)
 
             return jsonify(event_data), 200
@@ -1018,7 +1041,6 @@ def get_recommended_event():
 
 @app.route("/societies/<society_name>")
 def get_society_details(society_name):
-    app.logger.debug(society_name)
     try:
         cur = mysql.connection.cursor()
 
@@ -1168,6 +1190,7 @@ def get_society_id(society_name):
         return society_id
     return None
 
+
 def get_society_name(society_id):
     cursor = mysql.connection.cursor()
     cursor.execute(f"SELECT name FROM societies WHERE society_id = %s", (society_id,))
@@ -1179,10 +1202,7 @@ def get_society_name(society_id):
     return None
 
 
-
 def has_edit_permissions(user_id, society_id):
-    app.logger.debug(user_id)
-    app.logger.debug(society_id)
     if not society_id or not user_id:
         return False
 
@@ -1207,4 +1227,4 @@ def generate_random_filename(length=10):
 if __name__ == "__main__":
     app.run(debug=True)
     if result := train():
-        app.logger.debug(result)
+        app.logger.debug(f"Train result{result}")

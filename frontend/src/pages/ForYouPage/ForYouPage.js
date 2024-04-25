@@ -33,7 +33,7 @@ const ForYouPage = () => {
     const fetchData = async () => {
       try {
         const response = await checkSession();
-        setSocietyName(response.societyName);
+        setSocietyName(response.society_name);
       } catch {}
     };
 
