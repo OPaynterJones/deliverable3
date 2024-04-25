@@ -376,6 +376,14 @@ def get_events():
     cursor.close()
     return jsonify(fetch_data)
 
+@app.route("/get_societies", methods=["GET"])
+def get_societies():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM societies")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
+
 """ Interests Table """
 
 
