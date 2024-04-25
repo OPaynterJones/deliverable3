@@ -99,23 +99,36 @@ def train():
     # print(last_row_predictions)
 
 
+import numpy as np
+import joblib
+
+
 def predict_interest(interests):
     """
-    interests_vector = Take user interests from database
-    predicted_societies = multi_output_regressor.predict(interests_vector)
+    Predict potential interest in societies based on user interests.
+
+    Args:
+    interests (list): List of integers representing user interests (1 to ).
+
+    Returns:
+    list: List of tuples containing society names and predicted interest values. (unsorted)
     """
 
+    # Load the pre-trained multi-output regressor model
     multi_output_regressor = joblib.load("multi_output_regressor.pkl")
 
-    np.reshape(interests, (-1, 1))
-    predicted_societies = multi_output_regressor.predict(interests)
+    # Reshape interests to be a 2D array
+    interests_vector = np.reshape(interests, (1, -1))
 
+    print(interests_vector)
+
+    # Predict interest levels for the given interests
+    predicted_societies = multi_output_regressor.predict(interests_vector)
+
+    # Combine predicted interest values with society names and sort them
+    print(predicted_societies)
     predictions = [
         (interest_list[i], val) for i, val in enumerate(predicted_societies[0])
     ]
-    predictions.sort(key=lambda x: x[1], reverse=True)
 
     return predictions
-
-
-# train()
