@@ -275,6 +275,7 @@ def set_event_data():
     name = request_data.get("name")
     datetime = request_data.get("datetime")  # SQL DateTime format YYYY-MM-DD HH:MI:SS
     location = request_data.get("location")
+    description = request_data.get("description")
 
     if name == "" or name == None:
         name = "Default Social Name"
@@ -295,7 +296,7 @@ def set_event_data():
 
     cursor = mysql.connection.cursor()
     cursor.execute(
-        f"INSERT INTO events (society_id, name, datetime, location) VALUES ({society_id}, '{name}', '{datetime}', '{location}')"
+        f"INSERT INTO events (society_id, event_name, event_time, location, description) VALUES ({society_id}, '{name}', '{datetime}', '{location}', '{description}')"
     )
     mysql.connection.commit()
     cursor.close()
