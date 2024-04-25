@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./ForYouPage.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import EventContainer from "../../Components/EventContainer/EventContainer";
-import { useNavigate } from "react-router-dom";
 import { checkSession } from "../../api/authAPI";
 import BlankEvent from "../../Components/BlankEvent/BlankEvent";
+import { backendUrl } from "../../config";
 
 const getRecommendedEvent = async () => {
   try {
-    const response = await fetch("http://localhost:5000/recommend_event", {
+    const response = await fetch(`${backendUrl}/recommend_event`, {
       method: "GET",
       credentials: "include",
     });
@@ -72,7 +72,7 @@ const ForYouPage = () => {
         });
 
         formData.append("society_name", societyName);
-        const response = await fetch(`http://${window.location.hostname}:5000/create_new_event`, {
+        const response = await fetch(`${backendUrl}/create_new_event`, {
           method: "POST",
           credentials: "include",
           body: formData,

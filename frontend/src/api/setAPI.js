@@ -1,3 +1,5 @@
+import { backendUrl } from "../config";
+
 export const updateInformation = async (url, data) => {
   const response = await fetch(url, {
     method: "PUT",
@@ -15,7 +17,7 @@ export const updateInformation = async (url, data) => {
 };
 
 export const setUserInterests = async (interests) => {
-  const response = await fetch(`http://${window.location.hostname}:5000/add_interests`, {
+  const response = await fetch(`${backendUrl}/add_interests`, {
     method: "POST",
     credentials: "include",
     headers: {
