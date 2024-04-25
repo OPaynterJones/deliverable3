@@ -68,7 +68,7 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
     );
 
     setTimerRunning(true);
-    handleResponse(action);
+    handleResponse(eventData.event_id, action);
   };
 
   useEffect(() => {

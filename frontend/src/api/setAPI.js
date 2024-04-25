@@ -33,3 +33,28 @@ export const setUserInterests = async (interests) => {
   const data = await response.json();
   return data;
 };
+
+export const modifyInterests = async (event_id = null, action = null) => {
+  try {
+    const response = await fetch(
+      `${backendUrl}/modify_interest`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ event_id, action }),
+      }
+    );
+    if (!response.ok) {
+      const resp = await response.json();
+      throw new Error(resp.message);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching recommended event:", error);
+  }
+};

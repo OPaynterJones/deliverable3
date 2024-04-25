@@ -963,10 +963,12 @@ def set_userinterest():
         app.logger.info(f"not_existing_interests {not_existing_interests}")
 
         interests_to_update = selected_interests + not_existing_interests
-        interests_to_update = [(user_id, interest, scale) for interest, scale in interests_to_update]
+        interests_to_update = [
+            (user_id, interest, scale) for interest, scale in interests_to_update
+        ]
 
         insert_query = "INSERT INTO userInterests (user_id, interest, scale) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE scale = VALUES(scale)"
-        
+
         cursor.executemany(insert_query, interests_to_update)
 
         mysql.connection.commit()
@@ -976,6 +978,34 @@ def set_userinterest():
         mysql.connection.rollback()
         app.logger.info(e)
         return jsonify({"message": "Internal server error"}), 500
+
+
+@app.route("/modify_interest", methods=["POST"])
+def modify_user_interests():
+    session_token = request.cookies.get("session_token")
+
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 403
+
+    user_id = get_user_id(session_token)
+
+    event_id = request.json.get("event_id", None)
+
+    if not event_id:
+        return jsonify({"message": "Not authorised: no session token"}), 400
+
+    cursor = mysql.connection.cursor()
+
+    cursor.execute("SELECT society_id FROM events where event_id = %s", (event_id,))
+
+    society_id = cursor.fetchone()
+    
+    # TODO modify interests 
+
+    return jsonify({"message": "interests successfully modified"}), 200
 
 
 @app.route("/has_interests", methods=["POST"])
@@ -1027,8 +1057,6 @@ def get_recommended_event():
 
             society_id = event_data.get("society_id", None)
             if society_id:
-                app.logger.info("SOCIETY_NAME")
-                app.logger.info(get_society_name(society_id))
                 event_data["society_name"] = get_society_name(society_id)
 
             return jsonify(event_data), 200

@@ -5,6 +5,7 @@ import EventContainer from "../../Components/EventContainer/EventContainer";
 import { checkSession } from "../../api/authAPI";
 import BlankEvent from "../../Components/BlankEvent/BlankEvent";
 import { backendUrl } from "../../config";
+import { modifyInterests } from "../../api/setAPI";
 
 const getRecommendedEvent = async () => {
   try {
@@ -53,8 +54,13 @@ const ForYouPage = () => {
     fetchData();
   }, []);
 
-  const handleResponse = (action) => {
-    getRecommendedEvent().then(setEventData);
+  const handleResponse = (event_id, action) => {
+    console.log("response from event container", event_id, action)
+    modifyInterests(event_id, action);
+
+    setTimeout(() => {
+      getRecommendedEvent().then(setEventData);
+    }, 200);
   };
 
   useEffect(() => {
