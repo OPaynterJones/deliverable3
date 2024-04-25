@@ -11,6 +11,8 @@ import bcrypt
 import uuid
 from algorithm import train, predict_interest
 
+# update server
+
 
 app = Flask(__name__)
 
@@ -367,6 +369,7 @@ def set_event_location():
     mysql.connection.commit()
     cursor.close()
     return jsonify({"message": "Location updated successfully"})
+
 
 @app.route("/get_events", methods=["GET"])
 def get_events():
@@ -1007,7 +1010,8 @@ def get_recommended_event():
                 "location": event[3],
                 "time": event[4],
                 "image_url": event[5],  # Construct image URL
-                "society": event[6],
+                "society_id": event[6],
+                "society_name": get_society_name(event[6])
             }
             return jsonify(event_data), 200
         else:
@@ -1091,9 +1095,7 @@ def create_event():
     data = request.form.to_dict()
 
     image = request.files.get("image")
-    image_path = os.path.join(
-        "images", image.filename
-    )
+    image_path = os.path.join("images", image.filename)
     image.save(image_path)
 
     sql = """
@@ -1170,6 +1172,17 @@ def get_society_id(society_name):
     if society_id:
         return society_id
     return None
+
+def get_society_name(society_id):
+    cursor = mysql.connection.cursor()
+    cursor.execute(f"SELECT name FROM societies WHERE society_id = %s", (society_id,))
+    society_id = cursor.fetchone()
+    cursor.close()
+
+    if society_id:
+        return society_id
+    return None
+
 
 
 def has_edit_permissions(user_id, society_id):
