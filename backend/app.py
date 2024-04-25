@@ -994,25 +994,20 @@ def get_recommended_event():
         conn = mysql.connection
         cur = conn.cursor()
 
-        # Execute query to get random event
         query = "SELECT * FROM events ORDER BY RAND() LIMIT 1;"
         cur.execute(query)
         event = cur.fetchone()
 
-        # Check if event is found
         if event:
-            app.logger.debug(event[5])
-            # Prepare data with image path
-            event_data = {
-                "id": event[0],
-                "title": event[1],
-                "description": event[2],
-                "location": event[3],
-                "time": event[4],
-                "image_url": event[5],  # Construct image URL
-                "society_id": event[6],
-                "society_name": get_society_name(event[6])
-            }
+            column_names = [desc[0] for desc in cur.description]
+            event_data = {}
+            for idx, column in enumerate(column_names):
+                event_data[column] = event[idx]
+
+            society_id = event_data.get("society_id", None)
+            if society_id:
+                event_data["society_name"] = get_society_name(society_id)
+
             return jsonify(event_data), 200
         else:
             return jsonify({"message": "No events found"}), 404

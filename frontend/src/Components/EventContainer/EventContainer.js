@@ -112,10 +112,10 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
             }`,
           }}
         >
-          <p className="event-title">{eventData?.title}</p>
+          <p className="event-title">{eventData?.event_name}</p>
           <img
             className="event-image"
-            src={eventData?.image_url || ""}
+            src={eventData?.image_filename || ""}
             alt={eventData?.title || "No Title Available"}
             style={{
               opacity: animation !== "initial" ? 0.15 : 1,
@@ -151,7 +151,7 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
         </div>
         <div className="info-field">
           <p className="field-name">Time: </p>
-          <p className="field-info">{eventData?.time || "Time TBA"}</p>
+          <p className="field-info">{eventData?.event_time || "Time TBA"}</p>
         </div>
         <div className="info-field">
           <p className="field-name">Location: </p>
