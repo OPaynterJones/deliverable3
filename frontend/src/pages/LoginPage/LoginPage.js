@@ -142,7 +142,7 @@ const LoginPage = () => {
                 </span>
               </button>
             </div>
-            {isCreateAccount && (
+            {/* {isCreateAccount && (
               <>
                 <div className="committee-member-checkbox">
                   <label htmlFor="committee-member">
@@ -172,7 +172,7 @@ const LoginPage = () => {
                   </select>
                 )}
               </>
-            )}
+            )} */}
             {statusMessage && (
               <p className="success-message">{statusMessage}</p>
             )}

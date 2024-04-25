@@ -120,13 +120,11 @@ def predict_interest(interests):
     # Reshape interests to be a 2D array
     interests_vector = np.reshape(interests, (1, -1))
 
-    print(interests_vector)
 
     # Predict interest levels for the given interests
     predicted_societies = multi_output_regressor.predict(interests_vector)
 
     # Combine predicted interest values with society names and sort them
-    print(predicted_societies)
     predictions = [
         (interest_list[i], val) for i, val in enumerate(predicted_societies[0])
     ]

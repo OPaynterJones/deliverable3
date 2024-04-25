@@ -59,6 +59,7 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
   const [animation, setAnimation] = useState("intial");
 
   const handleButtonClick = (action) => {
+    if (!eventData) return;
     setAnimation(
       action === "like"
         ? "out-left"
@@ -91,10 +92,6 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
       navigate(`/societies/${eventData.society_name}`);
     }
   };
-
-  useEffect(() => {
-    console.log(eventData);
-  }, [eventData]);
 
   return (
     <>

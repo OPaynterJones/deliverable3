@@ -55,7 +55,7 @@ const ForYouPage = () => {
   }, []);
 
   const handleResponse = (event_id, action) => {
-    console.log("response from event container", event_id, action)
+    console.log("response from event container", event_id, action);
     modifyInterests(event_id, action);
 
     setTimeout(() => {
@@ -116,14 +116,14 @@ const ForYouPage = () => {
               handleResponse={handleResponse}
             />
           )}
-          {societyName && (
+          {/* {societyName && (
             <button
               className="create-new-event-button"
               onClick={() => setIsCreatingNewEvent(!isCreatingNewEvent)}
             >
               {isCreatingNewEvent ? "Save event" : "Create new event"}
             </button>
-          )}
+          )} */}
         </div>
       </div>
     </>
