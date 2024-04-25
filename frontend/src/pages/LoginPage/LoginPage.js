@@ -51,9 +51,7 @@ const LoginPage = () => {
         dataToSend.affiliatedSociety = selector.value;
       }
       const response = await fetch(
-        isCreateAccount
-          ? `${backendUrl}/register`
-          : `${backendUrl}/login`,
+        isCreateAccount ? `${backendUrl}/register` : `${backendUrl}/login`,
         {
           method: "POST",
           headers: {

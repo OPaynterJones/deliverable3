@@ -1051,6 +1051,8 @@ def modify_user_interests():
         adjusted_interest = user_interest + 0.1
     elif action == "dislike":
         adjusted_interest = user_interest - 0.1
+    elif action == "pass": 
+        adjusted_interest = user_interest
     else:
         return jsonify({"message": "Invalid action"}), 400
 

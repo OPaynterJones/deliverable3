@@ -1,0 +1,59 @@
+.forYouPage {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    align-items: center;
+  }
+  
+  .scrollMessageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+  }
+  
+  .scrollMessageContainerClickable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    margin: 8px 0;
+  }
+  
+  .scrollMessageContainerClickable:hover {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  
+  .scrollMessage {
+    color: var(--text-secondary);
+    font-weight: lighter;
+    pointer-events: none;
+    user-select: none;
+  }
+  
+  .groupsContainer {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    scroll-snap-type: y mandatory;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .groupsContainer::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .eventGroup {
+    height: 80vh;
+    width: 85vw;
+    padding: 5vh 0;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
