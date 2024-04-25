@@ -14,7 +14,7 @@ export const fetchSocieties = async () => {
 };
 
 export const getSociety = async (society_name) => {
-  const response = await fetch(`${backendUrl}/${society_name}`);
+  const response = await fetch(`${backendUrl}/societies/${society_name}`);
   const data = await response.json();
   return data;
 };
