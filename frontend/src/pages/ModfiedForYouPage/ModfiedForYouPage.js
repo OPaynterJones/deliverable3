@@ -10,7 +10,7 @@ import { modifyInterests } from "../../api/setAPI";
 const getRecommendedEvents = async () => {
   try {
     const response = await fetch(
-      "http://localhost:5000/recommend_event_group",
+      `${backendUrl}/recommend_event_group`,
       {
         method: "GET",
         credentials: "include",
