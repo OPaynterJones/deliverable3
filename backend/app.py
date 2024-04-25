@@ -11,6 +11,8 @@ import bcrypt
 import uuid
 from algorithm import train, predict_interest
 
+#update server
+
 
 app = Flask(__name__)
 
