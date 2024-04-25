@@ -87,10 +87,14 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
   }, [timerRunning, incomingData]);
 
   const goToSocietyPage = () => {
-    if (eventData?.society) {
-      navigate(`/societies/${eventData.society}`);
+    if (eventData?.society_name) {
+      navigate(`/societies/${eventData.society_name}`);
     }
   };
+
+  useEffect(() => {
+    console.log(eventData);
+  }, [eventData]);
 
   return (
     <>
@@ -142,7 +146,7 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
       <div className="additional-information">
         <div className="info-field">
           <h2 className="society-name" onClick={goToSocietyPage}>
-            {eventData ? `${eventData.society} Society` : "Society Name"}
+            {eventData ? `${eventData.society_name} Society` : "Society Name"}
           </h2>
         </div>
         <div className="info-field">
