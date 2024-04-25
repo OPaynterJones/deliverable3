@@ -6,6 +6,7 @@ import { BsChevronDoubleUp } from "react-icons/bs";
 import { IoReload } from "react-icons/io5";
 import { useState } from "react";
 import { modifyInterests } from "../../api/setAPI";
+import { backendUrl } from "../config";
 
 const getRecommendedEvents = async () => {
   try {
