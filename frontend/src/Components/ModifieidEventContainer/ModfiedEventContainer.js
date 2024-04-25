@@ -7,7 +7,7 @@ const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
 
   const handleButtonClick = (action) => {
     setResponseType(action);
-    handleResponse(eventData.eventId, action);
+    handleResponse(eventData.event_id, action);
   };
 
   return (
@@ -15,7 +15,7 @@ const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
       <div className={styles.eventContainer}>
         <div className={styles.primaryInfoContainer}>
           <div className={styles.eventTitle}>
-            {eventData?.title || "Event title TBD"}
+            {eventData?.event_name || "Event title TBD"}
           </div>
           <div className={styles.eventDescription}>
             {eventData?.description || "Event description TBD"}
@@ -23,10 +23,10 @@ const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
         </div>
         <div className={styles.secondaryInfoContainer}>
           <div className={styles.eventSociety}>
-            {eventData?.society || "Society undetermined"}
+            {eventData?.society_name || "Society undetermined"}
           </div>
           <div className={styles.secondaryInfoField}>
-            {eventData?.time || "Time TBD"}
+            {eventData?.event_time || "Time TBD"}
           </div>
           <div className={styles.secondaryInfoField}>
             {eventData?.location || "Location TBD"}
@@ -34,7 +34,7 @@ const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
         </div>
         <img
           className={styles.eventImage}
-          src={eventData?.image_url}
+          src={eventData?.image_filename}
           alt="Event"
         />
         <div className={styles.buttonContainer}>

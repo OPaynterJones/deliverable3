@@ -10,8 +10,10 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
+import ModifiedForYouPage from "./pages/ModfiedForYouPage/ModfiedForYouPage"
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
 import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChooseYourInterestsPage";
+
 import "./global-styles.css";
 import { checkSession, checkHasInterests } from "./api/authAPI";
 

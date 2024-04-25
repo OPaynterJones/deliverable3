@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import styles from "./ForYouPage.module.css";
+import styles from "./ModfiedForYouPage.module.css";
 import NavBar from "../../Components/NavBar/NavBar";
-import ModifiedEventContainer from "../../Components/ModifieidEventContainer/ModifiedEventContainer";
+import ModifiedEventContainer from "../../Components/ModifieidEventContainer/ModfiedEventContainer";
 import { BsChevronDoubleUp } from "react-icons/bs";
 import { IoReload } from "react-icons/io5";
 import { useState } from "react";
+import { modifyInterests } from "../../api/setAPI";
 
 const getRecommendedEvents = async () => {
   try {
@@ -25,31 +26,6 @@ const getRecommendedEvents = async () => {
   }
 };
 
-const modifyInterests = async (eventId = null, action = null) => {
-  try {
-    const response = await fetch(
-      `http://${window.location.hostname}:5000/modify_interest`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ eventId, action }),
-      }
-    );
-    if (!response.ok) {
-      const resp = await response.json();
-      throw new Error(resp.message);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching recommended event:", error);
-  }
-};
-
 const ForYouPage = () => {
   const endOfGroupContainerRef = useRef(null);
   const [groups, setGroups] = useState([]);
@@ -61,17 +37,9 @@ const ForYouPage = () => {
 
   const loadNewEvents = async () => {
     const currentLenght = groups.length * 3;
-    let newGroup = Array.from({ length: 3 }, (_, i) => ({
-      eventId: currentLenght + i,
-      image_url: `http://${window.location.hostname}:5000/images/powerlifting-society-event-1.png`,
-      title: `Powerlifting event ${currentLenght + i + 1} title`,
-      description: generateRandomDescription(),
-      time: `Powerlifting event ${currentLenght + i + 1} time`,
-      location: `Powerlifting event ${currentLenght + i + 1} location`,
-    }));
 
     const newFetchedGroup = await getRecommendedEvents();
-    setGroups([...groups, newFetchedGroup ? newFetchedGroup : newGroup]);
+    setGroups([...groups, newFetchedGroup]);
   };
 
   const generateRandomDescription = () => {

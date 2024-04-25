@@ -71,7 +71,7 @@
   
   .eventImage {
     object-fit: contain;
-    max-width: 33%;
+    max-width: 25%;
     padding: 0.25rem;
     border-radius: 3px;
   }

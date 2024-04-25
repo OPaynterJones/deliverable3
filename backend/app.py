@@ -1051,7 +1051,7 @@ def modify_user_interests():
         adjusted_interest = user_interest + 0.1
     elif action == "dislike":
         adjusted_interest = user_interest - 0.1
-    elif action == "pass": 
+    elif action == "pass":
         adjusted_interest = user_interest
     else:
         return jsonify({"message": "Invalid action"}), 400
@@ -1161,6 +1161,75 @@ def get_recommended_event():
 
         # If no events found for any society
         return jsonify({"message": "No new events found for any society"}), 404
+
+    except Exception as e:
+        return jsonify({"message": f"Error fetching events: {str(e)}"}), 500
+
+
+@app.route("/recommend_event_group", methods=["GET"])
+def get_recommend_event_group():
+
+    session_token = request.cookies.get("session_token")
+
+    if not session_token:
+        return jsonify({"message": "Not authorised: no session token"}), 401
+
+    if not validate_session_token(session_token):
+        return jsonify({"message": "Not authorised: bad session token"}), 403
+
+    user_id = get_user_id(session_token)
+
+    try:
+        conn = mysql.connection
+        cur = conn.cursor()
+
+        # Step 1: Query to find societies sorted by predicted interest
+        query_interest = "SELECT name FROM interestPredictions WHERE user_id = %s GROUP BY name ORDER BY MAX(predicted_interest) DESC;"
+        cur.execute(query_interest, (user_id,))
+        society_names = [row[0] for row in cur.fetchall()]
+
+        recommended_events = []
+
+        # Step 2: Iterate over societies to find recommended events
+        for society_name in society_names:
+            # Step 3: Filter events only from the society with the predicted interest
+            query_events = """
+                SELECT * FROM events 
+                WHERE society_id = (SELECT society_id FROM societies WHERE name = %s) 
+                AND event_id NOT IN (SELECT event_id FROM servedEvents WHERE user_id = %s) 
+                ORDER BY RAND();
+            """
+            cur.execute(query_events, (society_name, user_id))
+            events = cur.fetchall()
+
+            for event in events:
+                column_names = [desc[0] for desc in cur.description]
+                # Step 4: Store the served event in the served_events table
+                event_id = event[0]
+
+                event_data = {}
+                for idx, column in enumerate(column_names):
+                    event_data[column] = event[idx]
+
+                # Retrieve society name
+                event_data["society_name"] = society_name
+
+                recommended_events.append(event_data)
+
+                cur.execute(
+                    "INSERT INTO servedEvents (user_id, event_id) VALUES (%s, %s)",
+                    (user_id, event_id),
+                )
+                mysql.connection.commit()
+
+                if len(recommended_events) == 3:
+                    return jsonify(recommended_events), 200
+
+        if recommended_events:
+            return jsonify(recommended_events), 200
+        else:
+            # If no events found for any society
+            return jsonify({"message": "No new events found for any society"}), 404
 
     except Exception as e:
         return jsonify({"message": f"Error fetching events: {str(e)}"}), 500
