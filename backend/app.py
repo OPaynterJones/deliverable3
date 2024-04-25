@@ -368,6 +368,13 @@ def set_event_location():
     cursor.close()
     return jsonify({"message": "Location updated successfully"})
 
+@app.route("/get_events", methods=["GET"])
+def get_events():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM events")
+    fetch_data = cursor.fetchall()
+    cursor.close()
+    return jsonify(fetch_data)
 
 """ Interests Table """
 
