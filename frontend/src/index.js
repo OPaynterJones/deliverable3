@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ForYouPage from "./pages/ForYouPage/ForYouPage";
-import ModifiedForYouPage from "./pages/ModfiedForYouPage/ModfiedForYouPage"
+import ModifiedForYouPage from "./pages/ModifiedForYouPage/ModifiedForYouPage"
 import SocietyPage from "./pages/SocietyPage/SocietyPage";
 import ChooseYourInterestsPage from "./pages/ChoseYourInterests/ChooseYourInterestsPage";
 

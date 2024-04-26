@@ -7,6 +7,7 @@ const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
   const [responseType, setResponseType] = useState(null);
 
   const handleButtonClick = (action) => {
+    if (!eventData) return;
     setResponseType(action);
     handleResponse(eventData.event_id, action);
   };

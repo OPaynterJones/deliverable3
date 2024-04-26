@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import styles from "./ModfiedForYouPage.module.css";
+import styles from "./ModifiedForYouPage.module.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import ModifiedEventContainer from "../../Components/ModifieidEventContainer/ModfiedEventContainer";
 import { BsChevronDoubleUp } from "react-icons/bs";
@@ -10,13 +10,10 @@ import { backendUrl } from "../../config";
 
 const getRecommendedEvents = async () => {
   try {
-    const response = await fetch(
-      `${backendUrl}/recommend_event_group`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${backendUrl}/recommend_event_group`, {
+      method: "GET",
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);
     }
@@ -27,7 +24,7 @@ const getRecommendedEvents = async () => {
   }
 };
 
-const ForYouPage = () => {
+const ModifiedForYouPage = () => {
   const endOfGroupContainerRef = useRef(null);
   const [groups, setGroups] = useState([]);
 
@@ -37,19 +34,9 @@ const ForYouPage = () => {
   });
 
   const loadNewEvents = async () => {
-    const currentLenght = groups.length * 3;
-
     const newFetchedGroup = await getRecommendedEvents();
+    if (!newFetchedGroup) return;
     setGroups([...groups, newFetchedGroup]);
-  };
-
-  const generateRandomDescription = () => {
-    const loremIpsum =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
-    return loremIpsum.substring(
-      0,
-      Math.floor(Math.random() * (loremIpsum.length - 50)) + 50
-    );
   };
 
   useEffect(() => {
@@ -70,17 +57,21 @@ const ForYouPage = () => {
           <div className={styles.scrollMessage}>Previous </div>
         </div>
         <div className={styles.groupsContainer}>
-          {groups.map((group, index) => (
-            <div key={index} className={styles.eventGroup}>
-              {group.map((eventData, i) => (
-                <ModifiedEventContainer
-                  key={i}
-                  eventData={eventData}
-                  handleResponse={handleResponse}
-                />
-              ))}
-            </div>
-          ))}
+          {groups.length > 0 ? (
+            groups.map((group, index) => (
+              <div key={index} className={styles.eventGroup}>
+                {group.map((eventData, i) => (
+                  <ModifiedEventContainer
+                    key={i}
+                    eventData={eventData}
+                    handleResponse={handleResponse}
+                  />
+                ))}
+              </div>
+            ))
+          ) : (
+            <p>Loading new events...</p>
+          )}
           <div ref={endOfGroupContainerRef} />
         </div>
         <div
@@ -95,4 +86,4 @@ const ForYouPage = () => {
   );
 };
 
-export default ForYouPage;
+export default ModifiedForYouPage;
