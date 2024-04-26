@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BsHandThumbsUpFill, BsHandThumbsDownFill } from "react-icons/bs";
 import styles from "./ModifiedEventContainer.module.css";
+import { backendUrl } from "../../config";
 
 const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
   const [responseType, setResponseType] = useState(null);
@@ -34,7 +35,7 @@ const ModifiedEventContainer = ({ eventData = null, handleResponse }) => {
         </div>
         <img
           className={styles.eventImage}
-          src={eventData?.image_filename}
+          src={`${backendUrl}${eventData?.image_filename}`}
           alt="Event"
         />
         <div className={styles.buttonContainer}>

@@ -7,6 +7,7 @@ import {
 } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import "./EventContainer.css";
+import { backendUrl } from "../../config";
 
 const darkenColor = (color, amount) => {
   if (!/^rgb\([0-9]{1,3}, [0-9]{1,3}, [0-9]{1,3}\)$/.test(color)) {
@@ -112,7 +113,7 @@ const EventContainer = ({ incomingData = null, handleResponse }) => {
           <p className="event-title">{eventData?.event_name}</p>
           <img
             className="event-image"
-            src={eventData?.image_filename || ""}
+            src={`${backendUrl}${eventData?.image_filename}` || ""}
             alt={eventData?.title || "No Title Available"}
             style={{
               opacity: animation !== "initial" ? 0.15 : 1,
